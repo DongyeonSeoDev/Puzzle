@@ -42,6 +42,70 @@ public class Map : MonoBehaviour
 
             blocks.Add(block);
         }
+
+        bool isChange = true;
+
+        while (true)
+        {
+            isChange = false;
+
+            for (int i = 0; i < 9; i++)
+            {
+                for (int j = 0; j < 7; j++)
+                {
+                    if (blocks[i][j].blockType == blocks[i][j + 1].blockType && blocks[i][j + 1].blockType == blocks[i][j + 1].blockType)
+                    {
+                        int randomNum;
+
+                        do
+                        {
+                            randomNum = Random.Range(0, 5);
+                        }
+                        while (blocks[i][j].blockType == (eBlockType)randomNum);
+
+                        blocks[i][j].gameObject.SetActive(false);
+
+                        Block block = CreateBlock(randomNum).GetComponent<Block>();
+                        block.gameObject.SetActive(true);
+                        block.gameObject.transform.position = blockPositions[i][j].position;
+
+                        blocks[i][j] = block;
+                        isChange = true;
+                    }
+                }
+            }
+
+            for (int i = 0; i < 7; i++)
+            {
+                for (int j = 0; j < 9; j++)
+                {
+                    if (blocks[i][j].blockType == blocks[i + 1][j].blockType && blocks[i + 1][j].blockType == blocks[i + 1][j].blockType)
+                    {
+                        int randomNum;
+
+                        do
+                        {
+                            randomNum = Random.Range(0, 5);
+                        }
+                        while (blocks[i][j].blockType == (eBlockType)randomNum);
+
+                        blocks[i][j].gameObject.SetActive(false);
+
+                        Block block = CreateBlock(randomNum).GetComponent<Block>();
+                        block.gameObject.SetActive(true);
+                        block.gameObject.transform.position = blockPositions[i][j].position;
+
+                        blocks[i][j] = block;
+                        isChange = true;
+                    }
+                }
+            }
+
+            if (!isChange)
+            {
+                break;
+            }
+        }
     }
 
     private GameObject CreateBlock(int type)
