@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.UI;
 
 public enum eBlockType
 {
@@ -8,4 +9,14 @@ public enum eBlockType
 public class Block : MonoBehaviour
 {
     public eBlockType blockType;
+    private Button button = null;
+
+    private void Awake()
+    {
+        button = GetComponent<Button>();
+        button.onClick.AddListener(() =>
+        {
+            Map.Move(this);
+        });
+    }
 }
