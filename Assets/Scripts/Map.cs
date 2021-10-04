@@ -11,7 +11,7 @@ public class Map : MonoBehaviour
     [Header("eBlockType 순서대로 넣어주어야 합니다.")]
     
     [SerializeField] private List<GameObject> blockList = new List<GameObject>();
-    [SerializeField] private List<GameObject> blockPool = new List<GameObject>();
+    [SerializeField] private List<Block> blockPool = new List<Block>();
 
     private Transform[][] blockPositions = new Transform[9][];
     private List<List<Block>> blocks = new List<List<Block>>();
@@ -47,7 +47,7 @@ public class Map : MonoBehaviour
 
             for (int j = 0; j < 9; j++)
             {
-                block.Add(CreateBlock(Random.Range(0, 5)).GetComponent<Block>());
+                block.Add(CreateBlock(Random.Range(0, 5)));
                 block[j].gameObject.SetActive(true);
                 block[j].gameObject.transform.position = blockPositions[i][j].position;
             }
@@ -77,7 +77,7 @@ public class Map : MonoBehaviour
 
                         blocks[i][j].gameObject.SetActive(false);
 
-                        Block block = CreateBlock(randomNum).GetComponent<Block>();
+                        Block block = CreateBlock(randomNum);
                         block.gameObject.SetActive(true);
                         block.gameObject.transform.position = blockPositions[i][j].position;
 
@@ -103,7 +103,7 @@ public class Map : MonoBehaviour
 
                         blocks[i][j].gameObject.SetActive(false);
 
-                        Block block = CreateBlock(randomNum).GetComponent<Block>();
+                        Block block = CreateBlock(randomNum);
                         block.gameObject.SetActive(true);
                         block.gameObject.transform.position = blockPositions[i][j].position;
 
@@ -264,6 +264,125 @@ public class Map : MonoBehaviour
                     }
                 }
             }
+
+            while (true)
+            {
+                bool isChange = true;
+
+                while (isChange)
+                {
+                    isChange = false;
+
+                    for (int i = 0; i < blocks.Count; i++)
+                    {
+                        for (int j = 0; j < blocks[i].Count; j++)
+                        {
+                            if (i - 1 >= 0 && !blocks[i - 1][j].gameObject.activeSelf && blocks[i][j].gameObject.activeSelf)
+                            {
+                                isChange = true;
+
+                                Block tempBlock = blocks[i - 1][j];
+                                blocks[i - 1][j] = blocks[i][j];
+                                blocks[i][j] = tempBlock;
+
+                                blocks[i][j].transform.position = blockPositions[i][j].position;
+                                blocks[i - 1][j].transform.position = blockPositions[i - 1][j].position;
+                            }
+                        }
+                    }
+                }
+
+                for (int i = 0; i < blocks.Count; i++)
+                {
+                    for (int j = 0; j < blocks[i].Count; j++)
+                    {
+                        if (blocks[i][j] == null || !blocks[i][j].gameObject.activeSelf)
+                        {
+                            Block block = CreateBlock(Random.Range(0, 5));
+                            block.transform.position = blockPositions[i][j].position;
+                            block.gameObject.SetActive(true);
+                            blocks[i][j] = block;
+                        }
+                    }
+                }
+
+                bool isFirstCheck = true;
+
+                while (true)
+                {
+                    check = false;
+                    posI = 0;
+                    posJ = 0;
+                    up = true;
+
+                    for (int i = 0; i < 9; i++)
+                    {
+                        for (int j = 0; j < 7; j++)
+                        {
+                            if (blocks[i][j].blockType == blocks[i][j + 1].blockType && blocks[i][j + 1].blockType == blocks[i][j + 2].blockType
+                                && blocks[i][j].gameObject.activeSelf && blocks[i][j + 1].gameObject.activeSelf && blocks[i][j + 2].gameObject.activeSelf)
+                            {
+                                check = true;
+                                posI = i;
+                                posJ = j + 1;
+                                up = false;
+
+                                i = 9;
+                                j = 7;
+                                break;
+                            }
+                        }
+                    }
+
+                    if (up)
+                    {
+                        for (int i = 0; i < 7; i++)
+                        {
+                            for (int j = 0; j < 9; j++)
+                            {
+                                if (blocks[i][j].blockType == blocks[i + 1][j].blockType && blocks[i + 1][j].blockType == blocks[i + 2][j].blockType
+                                    && blocks[i][j].gameObject.activeSelf && blocks[i + 1][j].gameObject.activeSelf && blocks[i + 2][j].gameObject.activeSelf)
+                                {
+                                    check = true;
+
+                                    posI = i + 1;
+                                    posJ = j;
+                                    up = true;
+
+                                    i = 7;
+                                    j = 9;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+
+                    if (!check)
+                    {
+                        break;
+                    }
+
+                    isFirstCheck = false;
+
+                    if (up)
+                    {
+                        blocks[posI - 1][posJ].gameObject.SetActive(false);
+                        blocks[posI][posJ].gameObject.SetActive(false);
+                        blocks[posI + 1][posJ].gameObject.SetActive(false);
+                    }
+                    else
+                    {
+                        blocks[posI][posJ - 1].gameObject.SetActive(false);
+                        blocks[posI][posJ].gameObject.SetActive(false);
+                        blocks[posI][posJ + 1].gameObject.SetActive(false);
+                    }
+                }
+
+                if (isFirstCheck)
+                {
+                    break;
+                }
+            }
         }
     }
 
@@ -279,11 +398,33 @@ public class Map : MonoBehaviour
         instance.currentBlock = block;
     }
 
-    private GameObject CreateBlock(int type)
+    private Block CreateBlock(int type)
     {
-        blockPool.Add(Instantiate(blockList[type], bulletObject));
-        blockPool[blockPool.Count - 1].SetActive(false);
+        Block block = blockPool.Find(x => !x.gameObject.activeSelf && x.blockType == (eBlockType)type);
 
-        return blockPool[blockPool.Count - 1];
+        if (block == null)
+        {
+            blockPool.Add(Instantiate(blockList[type], bulletObject).GetComponent<Block>());
+            blockPool[blockPool.Count - 1].gameObject.SetActive(false);
+
+            return blockPool[blockPool.Count - 1];
+        }
+
+        int a, b;
+
+        a = blocks.FindIndex(x => x.Find(y => y == block));
+
+
+        if (a != -1)
+        {
+            b = blocks[a].FindIndex(x => x == block);
+
+            if (b != -1)
+            {
+                blocks[a][b] = null;
+            }
+        }
+
+        return block;
     }
 }
