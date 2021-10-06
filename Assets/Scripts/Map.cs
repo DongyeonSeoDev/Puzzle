@@ -233,9 +233,11 @@ public class Map : MonoBehaviour
 
                 if (!check && !isChenage)
                 {
-                    temp = blocks[blockX + (int)moveX][blockY + (int)moveY];
-                    blocks[blockX + (int)moveX][blockY + (int)moveY] = blocks[blockX][blockY];
+                    temp = blocks[blockX + (int)moveY][blockY + (int)moveX];
+                    blocks[blockX + (int)moveY][blockY + (int)moveX] = blocks[blockX][blockY];
                     blocks[blockX][blockY] = temp;
+
+                    return;
                 }
 
                 if (!check)
