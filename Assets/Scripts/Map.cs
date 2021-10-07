@@ -257,12 +257,16 @@ public class Map : MonoBehaviour
                         blocks[posI - 1][posJ].gameObject.SetActive(false);
                         blocks[posI][posJ].gameObject.SetActive(false);
                         blocks[posI + 1][posJ].gameObject.SetActive(false);
+
+                        GamePlayManager.Instance.BlockBroken(blocks[posI][posJ], 3);
                     }
                     else
                     {
                         blocks[posI][posJ - 1].gameObject.SetActive(false);
                         blocks[posI][posJ].gameObject.SetActive(false);
                         blocks[posI][posJ + 1].gameObject.SetActive(false);
+
+                        GamePlayManager.Instance.BlockBroken(blocks[posI][posJ], 3);
                     }
                 }
             }
@@ -371,22 +375,27 @@ public class Map : MonoBehaviour
                         blocks[posI - 1][posJ].gameObject.SetActive(false);
                         blocks[posI][posJ].gameObject.SetActive(false);
                         blocks[posI + 1][posJ].gameObject.SetActive(false);
+
+                        GamePlayManager.Instance.BlockBroken(blocks[posI][posJ], 3);
                     }
                     else
                     {
                         blocks[posI][posJ - 1].gameObject.SetActive(false);
                         blocks[posI][posJ].gameObject.SetActive(false);
                         blocks[posI][posJ + 1].gameObject.SetActive(false);
+
+                        GamePlayManager.Instance.BlockBroken(blocks[posI][posJ], 3);
                     }
                 }
 
                 if (isFirstCheck)
                 {
+                    GamePlayManager.Instance.MoveBlock();
                     break;
                 }
-            }
-        }
-    }
+            } //end of while
+        } //end of if
+    } //end of Update
 
     public static void Move(Block block)
     {
