@@ -32,6 +32,8 @@ public class GamePlayManager : MonoBehaviour
     private int starCount = 0;
     private int score = 0;
 
+    private bool isLimitCountTextColorChange = false;
+
     private event Action<Block, int> clearConditionCheck;
 
     private static GamePlayManager instance = null;
@@ -101,10 +103,22 @@ public class GamePlayManager : MonoBehaviour
         limitCount--;
         SetLimitCountText();
 
+        if (!isLimitCountTextColorChange == limitCount <= 3)
+        {
+            isLimitCountTextColorChange = true;
+
+            LimitCountTextColorChange();
+        }
+
         if (limitCount <= 0)
         {
             GameOver();
         }
+    }
+
+    public void LimitCountTextColorChange()
+    {
+        limitCountText.color = Color.red;
     }
 
     public void BlockBroken(Block block, int count)
