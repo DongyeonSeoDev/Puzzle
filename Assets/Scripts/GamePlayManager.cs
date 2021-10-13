@@ -29,6 +29,7 @@ public class GamePlayManager : MonoBehaviour
     [SerializeField] private eClearConditions clearCondition;
     [SerializeField] private BreakingBlockClear breakingblockClear = null;
 
+
     private int starCount = 0;
     private int score = 0;
 
@@ -163,5 +164,6 @@ public class GamePlayManager : MonoBehaviour
     private void GameOver()
     {
         Debug.Log("게임 오버");
+        
     }
 }

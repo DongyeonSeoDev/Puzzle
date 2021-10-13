@@ -70,9 +70,9 @@ public class StageManager : MonoBehaviour
     }
     public void SelectStage(int dataIndex)
     {
-        if(uIManager.remainChanceCnt > 0)
+        if (uIManager.remainChanceCnt > 0)
         {
-            uIManager.EnterStage();
+            uIManager.EnterStage(dataIndex);
             //데이터 불러오기
             //버튼 이벤트
         }

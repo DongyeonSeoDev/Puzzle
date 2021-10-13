@@ -2216,6 +2216,7 @@ MonoBehaviour:
   btnObj: {fileID: 1238038245}
   buttonTrs: []
   rect: []
+  uIManager: {fileID: 1914666039}
 --- !u!1 &1326439123
 GameObject:
   m_ObjectHideFlags: 0
@@ -2700,7 +2701,7 @@ GameObject:
   - component: {fileID: 1913059472}
   - component: {fileID: 1913059471}
   m_Layer: 5
-  m_Name: Text
+  m_Name: remainChanceCnt
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2747,18 +2748,18 @@ MonoBehaviour:
       m_Calls: []
   m_FontData:
     m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
-    m_FontSize: 14
+    m_FontSize: 50
     m_FontStyle: 0
     m_BestFit: 0
-    m_MinSize: 10
-    m_MaxSize: 40
-    m_Alignment: 0
+    m_MinSize: 3
+    m_MaxSize: 50
+    m_Alignment: 4
     m_AlignByGeometry: 0
     m_RichText: 1
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: New Text
+  m_Text: 99
 --- !u!222 &1913059472
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -2929,6 +2930,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9208ec88792ddb7448dfa67ef5e70aca, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  remainChanceTxt: {fileID: 1913059471}
+  remainChanceCnt: 99
 --- !u!4 &1914666040
 Transform:
   m_ObjectHideFlags: 0
