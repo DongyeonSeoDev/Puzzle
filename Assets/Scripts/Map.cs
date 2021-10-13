@@ -26,6 +26,9 @@ public class Map : MonoBehaviour
     private Vector2 buttonDown = Vector2.zero;
     private Vector2 buttonUp = Vector2.zero;
 
+    private float moveX = 0f;
+    private float moveY = 0f;
+
     private void Awake()
     {
         instance = this;
@@ -55,69 +58,7 @@ public class Map : MonoBehaviour
             blocks.Add(block);
         }
 
-        bool isChange = true;
-
-        while (true)
-        {
-            isChange = false;
-
-            for (int i = 0; i < 9; i++)
-            {
-                for (int j = 0; j < 7; j++)
-                {
-                    if (blocks[i][j].blockType == blocks[i][j + 1].blockType && blocks[i][j + 1].blockType == blocks[i][j + 2].blockType)
-                    {
-                        int randomNum;
-
-                        do
-                        {
-                            randomNum = Random.Range(0, 5);
-                        }
-                        while (blocks[i][j].blockType == (eBlockType)randomNum);
-
-                        blocks[i][j].gameObject.SetActive(false);
-
-                        Block block = CreateBlock(randomNum);
-                        block.gameObject.SetActive(true);
-                        block.gameObject.transform.position = blockPositions[i][j].position;
-
-                        blocks[i][j] = block;
-                        isChange = true;
-                    }
-                }
-            }
-
-            for (int i = 0; i < 7; i++)
-            {
-                for (int j = 0; j < 9; j++)
-                {
-                    if (blocks[i][j].blockType == blocks[i + 1][j].blockType && blocks[i + 1][j].blockType == blocks[i + 2][j].blockType)
-                    {
-                        int randomNum;
-
-                        do
-                        {
-                            randomNum = Random.Range(0, 5);
-                        }
-                        while (blocks[i][j].blockType == (eBlockType)randomNum);
-
-                        blocks[i][j].gameObject.SetActive(false);
-
-                        Block block = CreateBlock(randomNum);
-                        block.gameObject.SetActive(true);
-                        block.gameObject.transform.position = blockPositions[i][j].position;
-
-                        blocks[i][j] = block;
-                        isChange = true;
-                    }
-                }
-            }
-
-            if (!isChange)
-            {
-                break;
-            }
-        }
+        CheckBlock(true, false);
     }
 
     private void Update()
@@ -136,8 +77,8 @@ public class Map : MonoBehaviour
 
             buttonUp = Input.mousePosition;
 
-            float moveX = buttonDown.x - buttonUp.x;
-            float moveY = buttonDown.y - buttonUp.y;
+            moveX = buttonDown.x - buttonUp.x;
+            moveY = buttonDown.y - buttonUp.y;
 
             if (Mathf.Abs(moveX) > Mathf.Abs(moveY))
             {
@@ -172,103 +113,13 @@ public class Map : MonoBehaviour
                 return;
             }
 
-            Block temp = blocks[blockX + (int)moveY][blockY + (int)moveX];
+            var tempBlock = blocks[blockX + (int)moveY][blockY + (int)moveX];
             blocks[blockX + (int)moveY][blockY + (int)moveX] = currentBlock;
-            blocks[blockX][blockY] = temp;
+            blocks[blockX][blockY] = tempBlock;
 
-            bool check = false;
-            bool isChenage = false;
-            int posI = 0;
-            int posJ = 0;
-            bool up = true;
-
-            while (true)
+            if (CheckBlock(false, true))
             {
-                check = false;
-                posI = 0;
-                posJ = 0;
-                up = true;
-
-                for (int i = 0; i < 9; i++)
-                {
-                    for (int j = 0; j < 7; j++)
-                    {
-                        if (blocks[i][j].blockType == blocks[i][j + 1].blockType && blocks[i][j + 1].blockType == blocks[i][j + 2].blockType 
-                            && blocks[i][j].gameObject.activeSelf && blocks[i][j + 1].gameObject.activeSelf && blocks[i][j + 2].gameObject.activeSelf)
-                        {
-                            check = true;
-                            posI = i;
-                            posJ = j + 1;
-                            up = false;
-
-                            i = 9;
-                            j = 7;
-                            break;
-                        }
-                    }
-                }
-
-                if (up)
-                {
-                    for (int i = 0; i < 7; i++)
-                    {
-                        for (int j = 0; j < 9; j++)
-                        {
-                            if (blocks[i][j].blockType == blocks[i + 1][j].blockType && blocks[i + 1][j].blockType == blocks[i + 2][j].blockType
-                                && blocks[i][j].gameObject.activeSelf && blocks[i + 1][j].gameObject.activeSelf && blocks[i + 2][j].gameObject.activeSelf)
-                            {
-                                check = true;
-
-                                posI = i + 1;
-                                posJ = j;
-                                up = true;
-
-                                i = 7;
-                                j = 9;
-                                break;
-                            }
-                        }
-                    }
-                }
-
-                if (!check && !isChenage)
-                {
-                    temp = blocks[blockX + (int)moveY][blockY + (int)moveX];
-                    blocks[blockX + (int)moveY][blockY + (int)moveX] = blocks[blockX][blockY];
-                    blocks[blockX][blockY] = temp;
-
-                    return;
-                }
-
-                if (!check)
-                {
-                    currentBlock = null;
-                    break;
-                }
-                else
-                {
-                    isChenage = true;
-
-                    blocks[blockX][blockY].transform.position = blockPositions[blockX][blockY].position;
-                    blocks[blockX + (int)moveY][blockY + (int)moveX].transform.position = blockPositions[blockX + (int)moveY][blockY + (int)moveX].position;
-
-                    if (up)
-                    {
-                        blocks[posI - 1][posJ].gameObject.SetActive(false);
-                        blocks[posI][posJ].gameObject.SetActive(false);
-                        blocks[posI + 1][posJ].gameObject.SetActive(false);
-
-                        GamePlayManager.Instance.BlockBroken(blocks[posI][posJ], 3);
-                    }
-                    else
-                    {
-                        blocks[posI][posJ - 1].gameObject.SetActive(false);
-                        blocks[posI][posJ].gameObject.SetActive(false);
-                        blocks[posI][posJ + 1].gameObject.SetActive(false);
-
-                        GamePlayManager.Instance.BlockBroken(blocks[posI][posJ], 3);
-                    }
-                }
+                return;
             }
 
             while (true)
@@ -287,7 +138,7 @@ public class Map : MonoBehaviour
                             {
                                 isChange = true;
 
-                                Block tempBlock = blocks[i - 1][j];
+                                tempBlock = blocks[i - 1][j];
                                 blocks[i - 1][j] = blocks[i][j];
                                 blocks[i][j] = tempBlock;
 
@@ -312,83 +163,7 @@ public class Map : MonoBehaviour
                     }
                 }
 
-                bool isFirstCheck = true;
-
-                while (true)
-                {
-                    check = false;
-                    posI = 0;
-                    posJ = 0;
-                    up = true;
-
-                    for (int i = 0; i < 9; i++)
-                    {
-                        for (int j = 0; j < 7; j++)
-                        {
-                            if (blocks[i][j].blockType == blocks[i][j + 1].blockType && blocks[i][j + 1].blockType == blocks[i][j + 2].blockType
-                                && blocks[i][j].gameObject.activeSelf && blocks[i][j + 1].gameObject.activeSelf && blocks[i][j + 2].gameObject.activeSelf)
-                            {
-                                check = true;
-                                posI = i;
-                                posJ = j + 1;
-                                up = false;
-
-                                i = 9;
-                                j = 7;
-                                break;
-                            }
-                        }
-                    }
-
-                    if (up)
-                    {
-                        for (int i = 0; i < 7; i++)
-                        {
-                            for (int j = 0; j < 9; j++)
-                            {
-                                if (blocks[i][j].blockType == blocks[i + 1][j].blockType && blocks[i + 1][j].blockType == blocks[i + 2][j].blockType
-                                    && blocks[i][j].gameObject.activeSelf && blocks[i + 1][j].gameObject.activeSelf && blocks[i + 2][j].gameObject.activeSelf)
-                                {
-                                    check = true;
-
-                                    posI = i + 1;
-                                    posJ = j;
-                                    up = true;
-
-                                    i = 7;
-                                    j = 9;
-                                    break;
-                                }
-                            }
-                        }
-                    }
-
-                    if (!check)
-                    {
-                        break;
-                    }
-
-                    isFirstCheck = false;
-
-                    if (up)
-                    {
-                        blocks[posI - 1][posJ].gameObject.SetActive(false);
-                        blocks[posI][posJ].gameObject.SetActive(false);
-                        blocks[posI + 1][posJ].gameObject.SetActive(false);
-
-                        GamePlayManager.Instance.BlockBroken(blocks[posI][posJ], 3);
-                    }
-                    else
-                    {
-                        blocks[posI][posJ - 1].gameObject.SetActive(false);
-                        blocks[posI][posJ].gameObject.SetActive(false);
-                        blocks[posI][posJ + 1].gameObject.SetActive(false);
-
-                        GamePlayManager.Instance.BlockBroken(blocks[posI][posJ], 3);
-                    }
-                }
-
-                if (isFirstCheck)
+                if (CheckBlock(false, false))
                 {
                     GamePlayManager.Instance.MoveBlock();
                     break;
@@ -437,5 +212,216 @@ public class Map : MonoBehaviour
         }
 
         return block;
+    }
+
+    private bool CheckBlock(bool isFirst, bool isChangeBlock)
+    {
+        bool isChange = true;
+
+        bool isFirstCheck = true;
+        int posI = 0;
+        int posJ = 0;
+        bool up = true;
+
+        while (true)
+        {
+            isChange = false;
+
+            if (isFirst)
+            {
+                for (int i = 0; i < 9; i++)
+                {
+                    for (int j = 0; j < 7; j++)
+                    {
+                        if (blocks[i][j].blockType == blocks[i][j + 1].blockType && blocks[i][j + 1].blockType == blocks[i][j + 2].blockType)
+                        {
+                            int randomNum;
+
+                            do
+                            {
+                                randomNum = Random.Range(0, 5);
+                            }
+                            while (blocks[i][j].blockType == (eBlockType)randomNum);
+
+                            blocks[i][j].gameObject.SetActive(false);
+
+                            Block block = CreateBlock(randomNum);
+                            block.gameObject.SetActive(true);
+                            block.gameObject.transform.position = blockPositions[i][j].position;
+
+                            blocks[i][j] = block;
+                            isChange = true;
+                        }
+                    }
+                }
+
+                for (int i = 0; i < 7; i++)
+                {
+                    for (int j = 0; j < 9; j++)
+                    {
+                        if (blocks[i][j].blockType == blocks[i + 1][j].blockType && blocks[i + 1][j].blockType == blocks[i + 2][j].blockType)
+                        {
+                            int randomNum;
+
+                            do
+                            {
+                                randomNum = Random.Range(0, 5);
+                            }
+                            while (blocks[i][j].blockType == (eBlockType)randomNum);
+
+                            blocks[i][j].gameObject.SetActive(false);
+
+                            Block block = CreateBlock(randomNum);
+                            block.gameObject.SetActive(true);
+                            block.gameObject.transform.position = blockPositions[i][j].position;
+
+                            blocks[i][j] = block;
+                            isChange = true;
+                        }
+                    }
+                }
+            }
+            else
+            {
+                posI = 0;
+                posJ = 0;
+                up = true;
+
+                for (int i = 0; i < 9; i++)
+                {
+                    for (int j = 0; j < 7; j++)
+                    {
+                        if (blocks[i][j].blockType == blocks[i][j + 1].blockType && blocks[i][j + 1].blockType == blocks[i][j + 2].blockType
+                            && blocks[i][j].gameObject.activeSelf && blocks[i][j + 1].gameObject.activeSelf && blocks[i][j + 2].gameObject.activeSelf)
+                        {
+                            posI = i;
+                            posJ = j + 1;
+                            up = false;
+                            isChange = true;
+
+                            i = 9;
+                            j = 7;
+                            break;
+                        }
+                    }
+                }
+
+                if (up)
+                {
+                    for (int i = 0; i < 7; i++)
+                    {
+                        for (int j = 0; j < 9; j++)
+                        {
+                            if (blocks[i][j].blockType == blocks[i + 1][j].blockType && blocks[i + 1][j].blockType == blocks[i + 2][j].blockType
+                                && blocks[i][j].gameObject.activeSelf && blocks[i + 1][j].gameObject.activeSelf && blocks[i + 2][j].gameObject.activeSelf)
+                            {
+                                posI = i + 1;
+                                posJ = j;
+                                isChange = true;
+
+                                i = 7;
+                                j = 9;
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (isFirst)
+            {
+                if (!isChange)
+                {
+                    break;
+                }
+            }
+            else
+            {
+                if (isChangeBlock && !isChange && isFirstCheck)
+                {
+                    var tempBlock = blocks[blockX + (int)moveY][blockY + (int)moveX];
+                    blocks[blockX + (int)moveY][blockY + (int)moveX] = blocks[blockX][blockY];
+                    blocks[blockX][blockY] = tempBlock;
+                }
+
+                if (!isChange)
+                {
+                    if (isChangeBlock)
+                    {
+                        currentBlock = null;
+                    }
+
+                    break;
+                }
+                else
+                {
+                    isFirstCheck = false;
+
+                    if (isChangeBlock)
+                    {
+                        blocks[blockX][blockY].transform.position = blockPositions[blockX][blockY].position;
+                        blocks[blockX + (int)moveY][blockY + (int)moveX].transform.position = blockPositions[blockX + (int)moveY][blockY + (int)moveX].position;
+                    }
+
+                    var blockType = blocks[posI][posJ].blockType;
+                    int blockCount = 0;
+
+                    if (up)
+                    {
+                        if (posI + 2 < blocks.Count && blockType == blocks[posI + 2][posJ].blockType)
+                        {
+                            if (posI + 3 < blocks.Count && blockType == blocks[posI + 3][posJ].blockType)
+                            {
+                                blocks[posI + 3][posJ].gameObject.SetActive(false);
+                                blockCount++;
+
+                                //특수 블록 5개 짜리 설치
+                            }
+                            else
+                            {
+                                //특수 블록 4개 짜리 설치
+                            }
+
+                            blocks[posI + 2][posJ].gameObject.SetActive(false);
+                            blockCount++;
+                        }
+
+                        blocks[posI - 1][posJ].gameObject.SetActive(false);
+                        blocks[posI][posJ].gameObject.SetActive(false);
+                        blocks[posI + 1][posJ].gameObject.SetActive(false);
+
+                        GamePlayManager.Instance.BlockBroken(blocks[posI][posJ], blockCount + 3);
+                    }
+                    else
+                    {
+                        if (posJ + 2 < blocks[0].Count &&  blockType == blocks[posI][posJ + 2].blockType)
+                        {
+                            if (posJ + 3 < blocks[0].Count && blockType == blocks[posI][posJ + 3].blockType)
+                            {
+                                blocks[posI][posJ + 3].gameObject.SetActive(false);
+                                blockCount++;
+
+                                //특수 블록 5개 짜리 설치
+                            }
+                            else
+                            {
+                                //특수 블록 4개 짜리 설치
+                            }
+
+                            blocks[posI][posJ + 2].gameObject.SetActive(false);
+                            blockCount++;
+                        }
+
+                        blocks[posI][posJ - 1].gameObject.SetActive(false);
+                        blocks[posI][posJ].gameObject.SetActive(false);
+                        blocks[posI][posJ + 1].gameObject.SetActive(false);
+
+                        GamePlayManager.Instance.BlockBroken(blocks[posI][posJ], blockCount + 3);
+                    }
+                }
+            }
+        }
+
+        return isFirstCheck;
     }
 }
