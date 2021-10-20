@@ -164,6 +164,5 @@ public class GamePlayManager : MonoBehaviour
     private void GameOver()
     {
         Debug.Log("게임 오버");
-        
     }
 }

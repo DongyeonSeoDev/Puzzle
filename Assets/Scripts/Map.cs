@@ -7,9 +7,7 @@ public class Map : MonoBehaviour
     [SerializeField] private Transform blockPositionImages = null;
     [SerializeField] private Transform bulletObject = null;
 
-    [Header("(eBlockType 순서: red, blue, purple, orange, green)")]
-    [Header("eBlockType 순서대로 넣어주어야 합니다.")]
-    
+    [Header("순서: red, blue, purple, orange, green, unicorn, bomb, leaf")]
     [SerializeField] private List<GameObject> blockList = new List<GameObject>();
     [SerializeField] private List<Block> blockPool = new List<Block>();
 
@@ -366,62 +364,196 @@ public class Map : MonoBehaviour
                     var blockType = blocks[posI][posJ].blockType;
                     int blockCount = 0;
 
+                    eBlockType? specialBlockType = null;
+
                     if (up)
                     {
-                        if (posI + 2 < blocks.Count && blockType == blocks[posI + 2][posJ].blockType)
+                        if (BlockCheck(posI, posJ, up))
                         {
-                            if (posI + 3 < blocks.Count && blockType == blocks[posI + 3][posJ].blockType)
+                            blockCount += 2;
+                            specialBlockType = eBlockType.BOMB;
+                        }
+                        else
+                        {
+                            if (posI + 2 < blocks.Count && blockType == blocks[posI + 2][posJ].blockType)
                             {
-                                blocks[posI + 3][posJ].gameObject.SetActive(false);
+                                if (posI + 3 < blocks.Count && blockType == blocks[posI + 3][posJ].blockType)
+                                {
+                                    blocks[posI + 3][posJ].gameObject.SetActive(false);
+                                    blockCount++;
+
+                                    specialBlockType = eBlockType.UNICORN;
+                                }
+                                else
+                                {
+                                    specialBlockType = eBlockType.LEAF;
+                                }
+
+                                blocks[posI + 2][posJ].gameObject.SetActive(false);
                                 blockCount++;
-
-                                //특수 블록 5개 짜리 설치
                             }
-                            else
-                            {
-                                //특수 블록 4개 짜리 설치
-                            }
-
-                            blocks[posI + 2][posJ].gameObject.SetActive(false);
-                            blockCount++;
                         }
 
-                        blocks[posI - 1][posJ].gameObject.SetActive(false);
-                        blocks[posI][posJ].gameObject.SetActive(false);
-                        blocks[posI + 1][posJ].gameObject.SetActive(false);
+                        BlockBreak(posI, posJ, up);
 
                         GamePlayManager.Instance.BlockBroken(blocks[posI][posJ], blockCount + 3);
                     }
                     else
                     {
-                        if (posJ + 2 < blocks[0].Count &&  blockType == blocks[posI][posJ + 2].blockType)
+                        if (BlockCheck(posI, posJ, up))
                         {
-                            if (posJ + 3 < blocks[0].Count && blockType == blocks[posI][posJ + 3].blockType)
+                            blockCount += 2;
+                            specialBlockType = eBlockType.BOMB;
+                        }
+                        else
+                        {
+                            if (posJ + 2 < blocks[0].Count && blockType == blocks[posI][posJ + 2].blockType)
                             {
-                                blocks[posI][posJ + 3].gameObject.SetActive(false);
+                                if (posJ + 3 < blocks[0].Count && blockType == blocks[posI][posJ + 3].blockType)
+                                {
+                                    blocks[posI][posJ + 3].gameObject.SetActive(false);
+                                    blockCount++;
+
+                                    specialBlockType = eBlockType.UNICORN;
+                                }
+                                else
+                                {
+                                    specialBlockType = eBlockType.LEAF;
+                                }
+
+                                blocks[posI][posJ + 2].gameObject.SetActive(false);
                                 blockCount++;
-
-                                //특수 블록 5개 짜리 설치
                             }
-                            else
-                            {
-                                //특수 블록 4개 짜리 설치
-                            }
-
-                            blocks[posI][posJ + 2].gameObject.SetActive(false);
-                            blockCount++;
                         }
 
-                        blocks[posI][posJ - 1].gameObject.SetActive(false);
-                        blocks[posI][posJ].gameObject.SetActive(false);
-                        blocks[posI][posJ + 1].gameObject.SetActive(false);
+                        BlockBreak(posI, posJ, up);
 
                         GamePlayManager.Instance.BlockBroken(blocks[posI][posJ], blockCount + 3);
+                    }
+
+                    if (!(specialBlockType is null))
+                    {
+                        blocks[posI][posJ] = CreateBlock((int)specialBlockType);
+                        blocks[posI][posJ].transform.position = blockPositions[posI][posJ].position;
+                        blocks[posI][posJ].gameObject.SetActive(true);
                     }
                 }
             }
         }
 
         return isFirstCheck;
+    }
+
+    private void BlockBreak(int middleX, int middleY, bool isUp)
+    {
+        if (isUp)
+        {
+            blocks[middleX - 1][middleY].gameObject.SetActive(false);
+            blocks[middleX][middleY].gameObject.SetActive(false);
+            blocks[middleX + 1][middleY].gameObject.SetActive(false);
+        }
+        else
+        {
+            blocks[middleX][middleY - 1].gameObject.SetActive(false);
+            blocks[middleX][middleY].gameObject.SetActive(false);
+            blocks[middleX][middleY + 1].gameObject.SetActive(false);
+        }
+    }
+
+    private bool BlockCheck(int middleX, int middleY, bool isUp)
+    {
+        int[] posX = new int[2];
+        int[] posY = new int[2];
+
+        eBlockType type = blocks[middleX][middleY].blockType;
+
+        if (isUp)
+        {
+            for (int i = 0; i < 3; i++)
+            {
+                for (int j = 0; j < 3; j++)
+                {
+                    if (BlockTypeCheck(middleX - i - 1, middleY - 2 + j, type) && BlockTypeCheck(middleX - i - 1, middleY - 1 + j, type) && BlockTypeCheck(middleX - i - 1, middleY + j, type))
+                    {
+                        posX[0] = middleX - i - 1;
+                        posX[1] = middleX - i - 1;
+
+                        switch (j)
+                        {
+                            case 0:
+                                posY[0] = middleY - 2;
+                                posY[1] = middleY - 1;
+                                break;
+                            case 1:
+                                posY[0] = middleY - 1;
+                                posY[1] = middleY + 1;
+                                break;
+                            case 2:
+                                posY[0] = middleY + 1;
+                                posY[1] = middleY + 2;
+                                break;
+                        }
+
+                        BlockCheckTrue(posX, posY);
+
+                        return true;
+                    }
+                }
+            }
+        }
+        else
+        {
+            for (int i = 0; i < 3; i++)
+            {
+                for (int j = 0; j < 3; j++)
+                {
+                    if (BlockTypeCheck(middleX - 2 + j, middleY - i - 1, type) && BlockTypeCheck(middleX - 1 + j, middleY - i - 1, type) && BlockTypeCheck(middleX + j, middleY + -i - 1, type))
+                    {
+                        posY[0] = middleY - i - 1;
+                        posY[1] = middleY - i - 1;
+
+                        switch (j)
+                        {
+                            case 0:
+                                posX[0] = middleX - 2;
+                                posX[1] = middleX - 1;
+                                break;          
+                            case 1:             
+                                posX[0] = middleX - 1;
+                                posX[1] = middleX + 1;
+                                break;          
+                            case 2:             
+                                posX[0] = middleX + 1;
+                                posX[1] = middleX + 2;
+                                break;
+                        }
+
+                        BlockCheckTrue(posX, posY);
+
+                        return true;
+                    }
+                }
+            }
+        }
+
+        return false;
+    }
+
+    private bool BlockTypeCheck(int posX, int posY, eBlockType type)
+    {
+        if (posX < 0 || posY < 0 || posX >= blocks.Count || posY >= blocks[0].Count)
+        {
+            return false;
+        }
+
+        return blocks[posX][posY].blockType == type;
+    }
+
+    private void BlockCheckTrue(int[] posX, int[] posY)
+    {
+        for (int i = 0; i < 2; i++)
+        {
+            blocks[posX[i]][posY[i]].gameObject.SetActive(false);
+        }
     }
 }

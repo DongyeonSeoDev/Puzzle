@@ -3,7 +3,7 @@ using UnityEngine.UI;
 
 public enum eBlockType
 {
-    RED, BLUE, PURPLE, ORANGE, GREEN
+    RED, BLUE, PURPLE, ORANGE, GREEN, UNICORN, BOMB, LEAF
 }
 
 public class Block : MonoBehaviour
