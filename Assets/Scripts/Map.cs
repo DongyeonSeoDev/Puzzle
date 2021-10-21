@@ -73,51 +73,105 @@ public class Map : MonoBehaviour
                 return;
             }
 
-            buttonUp = Input.mousePosition;
-
-            moveX = buttonDown.x - buttonUp.x;
-            moveY = buttonDown.y - buttonUp.y;
-
-            if (Mathf.Abs(moveX) > Mathf.Abs(moveY))
+            if (BlockTypeCheck(currentBlock, eBlockType.LEAF))
             {
-                if (moveX > 0)
+                for (int i = 0; i < blocks.Count; i++)
                 {
-                    moveX = -1;
-                    moveY = 0;
+                    blocks[blockX][i].gameObject.SetActive(false);
+                    blocks[i][blockY].gameObject.SetActive(false);
+
+                    GamePlayManager.Instance.BlockBroken(blocks[blockX][i], 1);
+                    GamePlayManager.Instance.BlockBroken(blocks[i][blockY], 1);
                 }
-                else
+            }
+            else if (BlockTypeCheck(currentBlock, eBlockType.BOMB))
+            {
+                for (int i = 0; i < 5; i++)
                 {
-                    moveX = 1;
-                    moveY = 0;
+                    for (int j = 0; j < 5; j++)
+                    {
+                        if (blockX - 2 + i >= 0 && blockX - 2 + i < blocks.Count && blockY - 2 + j >= 0 && blockY - 2 + j < blocks[0].Count)
+                        {
+                            blocks[blockX - 2 + i][blockY - 2 + j].gameObject.SetActive(false);
+
+                            GamePlayManager.Instance.BlockBroken(blocks[blockX - 2 + i][blockY - 2 + j], 1);
+                        }
+                    }
                 }
             }
             else
             {
-                if (moveY > 0)
+                buttonUp = Input.mousePosition;
+
+                moveX = buttonDown.x - buttonUp.x;
+                moveY = buttonDown.y - buttonUp.y;
+
+                if (Mathf.Abs(moveX) > Mathf.Abs(moveY))
                 {
-                    moveX = 0;
-                    moveY = -1;
+                    if (moveX > 0)
+                    {
+                        moveX = -1;
+                        moveY = 0;
+                    }
+                    else
+                    {
+                        moveX = 1;
+                        moveY = 0;
+                    }
                 }
                 else
                 {
-                    moveX = 0;
-                    moveY = 1;
+                    if (moveY > 0)
+                    {
+                        moveX = 0;
+                        moveY = -1;
+                    }
+                    else
+                    {
+                        moveX = 0;
+                        moveY = 1;
+                    }
                 }
-            }
 
-            if ((blockX + (int)moveY) < 0 || (blockX + (int)moveY) > 8 || (blockY + (int)moveX) < 0 || (blockY + (int)moveX) > 8)
-            {
-                currentBlock = null;
-                return;
-            }
+                if ((blockX + (int)moveY) < 0 || (blockX + (int)moveY) > 8 || (blockY + (int)moveX) < 0 || (blockY + (int)moveX) > 8)
+                {
+                    currentBlock = null;
+                    return;
+                }
 
-            var tempBlock = blocks[blockX + (int)moveY][blockY + (int)moveX];
-            blocks[blockX + (int)moveY][blockY + (int)moveX] = currentBlock;
-            blocks[blockX][blockY] = tempBlock;
+                if (BlockTypeCheck(currentBlock, eBlockType.UNICORN))
+                {
+                    eBlockType eventBlockType = blocks[blockX + (int)moveY][blockY + (int)moveX].blockType;
+                    int breakBlockCount = 0;
 
-            if (CheckBlock(false, true))
-            {
-                return;
+                    for (int i = 0; i < blocks.Count; i++)
+                    {
+                        for (int j = 0; j < blocks[0].Count; j++)
+                        {
+                            if (blocks[i][j].blockType == eventBlockType)
+                            {
+                                blocks[i][j].gameObject.SetActive(false);
+                                breakBlockCount++;
+                            }
+                        }
+                    }
+
+                    blocks[blockX][blockY].gameObject.SetActive(false);
+
+                    GamePlayManager.Instance.BlockBroken(blocks[blockX + (int)moveY][blockY + (int)moveX], breakBlockCount);
+                    GamePlayManager.Instance.BlockBroken(blocks[blockX][blockY], 1);
+                }
+                else
+                {
+                    var tempBlock = blocks[blockX + (int)moveY][blockY + (int)moveX];
+                    blocks[blockX + (int)moveY][blockY + (int)moveX] = currentBlock;
+                    blocks[blockX][blockY] = tempBlock;
+
+                    if (CheckBlock(false, true))
+                    {
+                        return;
+                    }
+                }
             }
 
             while (true)
@@ -136,7 +190,7 @@ public class Map : MonoBehaviour
                             {
                                 isChange = true;
 
-                                tempBlock = blocks[i - 1][j];
+                                var tempBlock = blocks[i - 1][j];
                                 blocks[i - 1][j] = blocks[i][j];
                                 blocks[i][j] = tempBlock;
 
@@ -547,6 +601,16 @@ public class Map : MonoBehaviour
         }
 
         return blocks[posX][posY].blockType == type;
+    }
+
+    private bool BlockTypeCheck(Block block, eBlockType type)
+    {
+        if (block is null)
+        {
+            return false;
+        }
+
+        return block.blockType == type;
     }
 
     private void BlockCheckTrue(int[] posX, int[] posY)

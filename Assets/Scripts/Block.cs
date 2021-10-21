@@ -14,6 +14,7 @@ public class Block : MonoBehaviour
     private void Awake()
     {
         button = GetComponent<Button>();
+
         button.onClick.AddListener(() =>
         {
             Map.Move(this);
