@@ -16,22 +16,34 @@ public class BreakingBlockClear
     public int count;
 }
 
+[System.Serializable]
+public struct StageStarPoint
+{
+    public int[] starPoint;
+}
+
 public class GamePlayManager : MonoBehaviour
 {
-    [SerializeField] private int limitCount = 18;
-    [SerializeField] private int[] starScore = null;
-    [SerializeField] private int addScore = 20;
+    [SerializeField] private int[] limitCounts = null;
+    [SerializeField] private int addScores = 30;
+
+    [SerializeField] private string[] explanations = null;
+
+    [SerializeField] private StageStarPoint[] starScore = null;
 
     [SerializeField] private Image[] starImage = null;
     [SerializeField] private Text scoreText = null;
     [SerializeField] private Text limitCountText = null;
+    [SerializeField] private Text explanationText = null;
 
-    [SerializeField] private eClearConditions clearCondition;
-    [SerializeField] private BreakingBlockClear breakingblockClear = null;
+    [SerializeField] private eClearConditions[] clearConditions;
+    [SerializeField] private BreakingBlockClear[] breakingblockClears = null;
 
 
     private int starCount = 0;
     private int score = 0;
+
+    public int stageNumber = 0;
 
     private bool isLimitCountTextColorChange = false;
 
@@ -73,16 +85,17 @@ public class GamePlayManager : MonoBehaviour
 
     private void Start()
     {
-        switch (clearCondition)
+        switch (clearConditions[stageNumber])
         {
             case eClearConditions.BreakingBlocks:
                 clearConditionCheck += (block, count) =>
                 {
-                    if (block.blockType == breakingblockClear.blockType)
+                    if (block.blockType == breakingblockClears[stageNumber].blockType)
                     {
-                        breakingblockClear.count -= count;
+                        breakingblockClears[stageNumber].count -= count;
+                        SetExplanationText(breakingblockClears[stageNumber].count);
 
-                        if (breakingblockClear.count <= 0)
+                        if (breakingblockClears[stageNumber].count <= 0)
                         {
                             GameClear();
                         }
@@ -97,21 +110,24 @@ public class GamePlayManager : MonoBehaviour
                 };
                 break;
         }
+
+        SetLimitCountText();
+        SetExplanationText(breakingblockClears[stageNumber].count);
     }
 
     public void MoveBlock()
     {
-        limitCount--;
+        limitCounts[stageNumber]--;
         SetLimitCountText();
 
-        if (!isLimitCountTextColorChange == limitCount <= 3)
+        if (!isLimitCountTextColorChange == limitCounts[stageNumber] <= 3)
         {
             isLimitCountTextColorChange = true;
 
             LimitCountTextColorChange();
         }
 
-        if (limitCount <= 0)
+        if (limitCounts[stageNumber] <= 0)
         {
             GameOver();
         }
@@ -130,7 +146,7 @@ public class GamePlayManager : MonoBehaviour
 
     private void AddScore(int count)
     {
-        score += count * addScore;
+        score += count * addScores;
         SetScoreText();
         StarCheck();
     }
@@ -142,7 +158,7 @@ public class GamePlayManager : MonoBehaviour
 
     private void StarCheck()
     {
-        if (starCount < 3 && starScore[starCount] <= score)
+        if (starCount < 3 && starScore[stageNumber].starPoint[starCount] <= score)
         {
             starImage[starCount].color = Color.yellow;
             starCount++;
@@ -153,7 +169,13 @@ public class GamePlayManager : MonoBehaviour
 
     private void SetLimitCountText()
     {
-        limitCountText.text = "Á¦ÇÑÈ½¼ö: " + Mathf.Clamp(limitCount, 0, 100).ToString("00");
+        limitCountText.text = "Á¦ÇÑÈ½¼ö: " + Mathf.Clamp(limitCounts[stageNumber], 0, 100).ToString("00");
+    }
+
+    private void SetExplanationText(int count)
+    {
+        string[] str = explanations[stageNumber].Split('n');
+        explanationText.text = str[0] + count + str[1];
     }
 
     private void GameClear()

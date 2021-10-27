@@ -561,7 +561,7 @@ public class Map : MonoBehaviour
             {
                 for (int j = 0; j < 3; j++)
                 {
-                    if (BlockTypeCheck(middleX - 2 + j, middleY - i - 1, type) && BlockTypeCheck(middleX - 1 + j, middleY - i - 1, type) && BlockTypeCheck(middleX + j, middleY + -i - 1, type))
+                    if (BlockTypeCheck(middleX - 2 + j, middleY - i - 1, type) && BlockTypeCheck(middleX - 1 + j, middleY - i - 1, type) && BlockTypeCheck(middleX + j, middleY - i - 1, type))
                     {
                         posY[0] = middleY - i - 1;
                         posY[1] = middleY - i - 1;
