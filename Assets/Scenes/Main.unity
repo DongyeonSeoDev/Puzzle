@@ -5469,7 +5469,7 @@ MonoBehaviour:
     count: 200
   - blockType: 3
     count: 200
-  stageNumber: 1
+  stageNumber: 0
 --- !u!4 &1427594582
 Transform:
   m_ObjectHideFlags: 0
