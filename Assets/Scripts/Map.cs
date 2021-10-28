@@ -1,6 +1,8 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class Map : MonoBehaviour
 {
@@ -45,7 +47,7 @@ public class Map : MonoBehaviour
         for (int i = 0; i < 9; i++)
         {
             List<Block> block = new List<Block>();
-
+             
             for (int j = 0; j < 9; j++)
             {
                 block.Add(CreateBlock(Random.Range(0, 5)));
@@ -520,6 +522,12 @@ public class Map : MonoBehaviour
         int[] posY = new int[2];
 
         eBlockType type = blocks[middleX][middleY].blockType;
+        Debug.Log(type);
+        Debug.Log(middleX);
+        Debug.Log(middleY);
+        Debug.Log(isUp);
+        Debug.Log(blocks[0][0].blockType);
+        Debug.Log(blocks[8][8].blockType);
 
         if (isUp)
         {
