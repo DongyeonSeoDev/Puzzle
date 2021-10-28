@@ -535,10 +535,10 @@ public class Map : MonoBehaviour
             {
                 for (int j = 0; j < 3; j++)
                 {
-                    if (BlockTypeCheck(middleX - i - 1, middleY - 2 + j, type) && BlockTypeCheck(middleX - i - 1, middleY - 1 + j, type) && BlockTypeCheck(middleX - i - 1, middleY + j, type))
+                    if (BlockTypeCheck(middleX + i - 1, middleY - 2 + j, type) && BlockTypeCheck(middleX + i - 1, middleY - 1 + j, type) && BlockTypeCheck(middleX + i - 1, middleY + j, type))
                     {
-                        posX[0] = middleX - i - 1;
-                        posX[1] = middleX - i - 1;
+                        posX[0] = middleX + i - 1;
+                        posX[1] = middleX + i - 1;
 
                         switch (j)
                         {
@@ -569,10 +569,10 @@ public class Map : MonoBehaviour
             {
                 for (int j = 0; j < 3; j++)
                 {
-                    if (BlockTypeCheck(middleX - 2 + j, middleY - i - 1, type) && BlockTypeCheck(middleX - 1 + j, middleY - i - 1, type) && BlockTypeCheck(middleX + j, middleY - i - 1, type))
+                    if (BlockTypeCheck(middleX - 2 + j, middleY + i - 1, type) && BlockTypeCheck(middleX - 1 + j, middleY + i - 1, type) && BlockTypeCheck(middleX + j, middleY + i - 1, type))
                     {
-                        posY[0] = middleY - i - 1;
-                        posY[1] = middleY - i - 1;
+                        posY[0] = middleY + i - 1;
+                        posY[1] = middleY + i - 1;
 
                         switch (j)
                         {
