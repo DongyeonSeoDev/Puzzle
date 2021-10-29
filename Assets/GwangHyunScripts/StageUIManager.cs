@@ -1,18 +1,30 @@
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine.SceneManagement;
 using UnityEngine;
 
 public class StageUIManager : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
+    [SerializeField] private GameObject gameOverPanel;
+    [SerializeField] private GameObject nextStagePanel;
+    public void nextStageBtn()
     {
-        
+
     }
 
-    // Update is called once per frame
-    void Update()
+    public void reStartBtn()
     {
-        
+
     }
+
+    public void GameOver()
+    {
+        gameOverPanel.SetActive(true);
+    }
+
+    public void ReStart()
+    {
+        nextStagePanel.SetActive(true);
+    }
+    
 }
