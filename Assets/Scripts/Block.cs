@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
 
 public enum eBlockType
 {
@@ -9,15 +10,20 @@ public enum eBlockType
 public class Block : MonoBehaviour
 {
     public eBlockType blockType;
-    private Button button = null;
+
+    private EventTrigger trigger;
+    private EventTrigger.Entry enter = new EventTrigger.Entry();
 
     private void Awake()
     {
-        button = GetComponent<Button>();
+        trigger = GetComponent<EventTrigger>();
+        enter.eventID = EventTriggerType.PointerDown;
 
-        button.onClick.AddListener(() =>
+        enter.callback.AddListener((data) =>
         {
             Map.Move(this);
         });
+
+        trigger.triggers.Add(enter);
     }
 }
