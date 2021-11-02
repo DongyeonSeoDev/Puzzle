@@ -522,12 +522,6 @@ public class Map : MonoBehaviour
         int[] posY = new int[2];
 
         eBlockType type = blocks[middleX][middleY].blockType;
-        Debug.Log(type);
-        Debug.Log(middleX);
-        Debug.Log(middleY);
-        Debug.Log(isUp);
-        Debug.Log(blocks[0][0].blockType);
-        Debug.Log(blocks[8][8].blockType);
 
         if (isUp)
         {

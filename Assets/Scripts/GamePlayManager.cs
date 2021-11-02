@@ -32,6 +32,7 @@ public class GamePlayManager : MonoBehaviour
     [SerializeField] private StageStarPoint[] starScore = null;
 
     [SerializeField] private Image[] starImage = null;
+    [SerializeField] private Sprite starOnImage = null;
     [SerializeField] private Text scoreText = null;
     [SerializeField] private Text limitCountText = null;
     [SerializeField] private Text explanationText = null;
@@ -160,7 +161,7 @@ public class GamePlayManager : MonoBehaviour
     {
         if (starCount < 3 && starScore[stageNumber].starPoint[starCount] <= score)
         {
-            starImage[starCount].color = Color.yellow;
+            starImage[starCount].sprite = starOnImage;
             starCount++;
 
             StarCheck();
