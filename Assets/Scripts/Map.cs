@@ -7,9 +7,9 @@ using Random = UnityEngine.Random;
 public class Map : MonoBehaviour
 {
     [SerializeField] private Transform blockPositionImages = null;
-    [SerializeField] private Transform bulletObject = null;
+    [SerializeField] private Transform blockObject = null;
 
-    [Header("순서: red, blue, purple, orange, green, unicorn, bomb, leaf")]
+    [Header("순서: eBlockType 순서대로")]
     [SerializeField] private List<GameObject> blockList = new List<GameObject>();
     [SerializeField] private List<Block> blockPool = new List<Block>();
 
@@ -63,6 +63,11 @@ public class Map : MonoBehaviour
 
     private void Update()
     {
+        if (GamePlayManager.Instance.gameEnd)
+        {
+            return;
+        }
+
         if (Input.GetMouseButtonDown(0))
         {
             buttonDown = Input.mousePosition;
@@ -84,6 +89,9 @@ public class Map : MonoBehaviour
 
                     GamePlayManager.Instance.BlockBroken(blocks[blockX][i], 1);
                     GamePlayManager.Instance.BlockBroken(blocks[i][blockY], 1);
+
+                    GamePlayManager.Instance.BlockParticle(blocks[blockX][i]);
+                    GamePlayManager.Instance.BlockParticle(blocks[i][blockY]);
                 }
             }
             else if (BlockTypeCheck(currentBlock, eBlockType.BOMB))
@@ -97,6 +105,25 @@ public class Map : MonoBehaviour
                             blocks[blockX - 2 + i][blockY - 2 + j].gameObject.SetActive(false);
 
                             GamePlayManager.Instance.BlockBroken(blocks[blockX - 2 + i][blockY - 2 + j], 1);
+
+                            GamePlayManager.Instance.BlockParticle(blocks[blockX - 2 + i][blockY - 2 + j]);
+                        }
+                    }
+                }
+            }
+            else if (BlockTypeCheck(currentBlock, eBlockType.GIFTBOX))
+            {
+                for (int i = 0; i < 3; i++)
+                {
+                    for (int j = 0; j < 3; j++)
+                    {
+                        if (blockX - 1 + i >= 0 && blockX - 1 + i < blocks.Count && blockY - 1 + j >= 0 && blockY - 1 + j < blocks[0].Count)
+                        {
+                            blocks[blockX - 1 + i][blockY - 1 + j].gameObject.SetActive(false);
+
+                            GamePlayManager.Instance.BlockBroken(blocks[blockX - 1 + i][blockY - 1 + j], 1);
+
+                            GamePlayManager.Instance.BlockParticle(blocks[blockX - 1 + i][blockY - 1 + j]);
                         }
                     }
                 }
@@ -154,6 +181,8 @@ public class Map : MonoBehaviour
                             {
                                 blocks[i][j].gameObject.SetActive(false);
                                 breakBlockCount++;
+
+                                GamePlayManager.Instance.BlockParticle(blocks[i][j]);
                             }
                         }
                     }
@@ -162,6 +191,8 @@ public class Map : MonoBehaviour
 
                     GamePlayManager.Instance.BlockBroken(blocks[blockX + (int)moveY][blockY + (int)moveX], breakBlockCount);
                     GamePlayManager.Instance.BlockBroken(blocks[blockX][blockY], 1);
+
+                    GamePlayManager.Instance.BlockParticle(blocks[blockX][blockY]);
                 }
                 else
                 {
@@ -209,7 +240,18 @@ public class Map : MonoBehaviour
                     {
                         if (blocks[i][j] == null || !blocks[i][j].gameObject.activeSelf)
                         {
-                            Block block = CreateBlock(Random.Range(0, 5));
+                            int random = Random.Range(0, 100);
+                            Block block;
+
+                            if (random == 1)
+                            {
+                                block = CreateBlock((int)eBlockType.GIFTBOX);
+                            }
+                            else 
+                            {
+                                block = CreateBlock(Random.Range(0, 5));
+                            }
+
                             block.transform.position = blockPositions[i][j].position;
                             block.gameObject.SetActive(true);
                             blocks[i][j] = block;
@@ -220,6 +262,7 @@ public class Map : MonoBehaviour
                 if (CheckBlock(false, false))
                 {
                     GamePlayManager.Instance.MoveBlock();
+                    currentBlock = null;
                     break;
                 }
             } //end of while
@@ -244,7 +287,7 @@ public class Map : MonoBehaviour
 
         if (block == null)
         {
-            blockPool.Add(Instantiate(blockList[type], bulletObject).GetComponent<Block>());
+            blockPool.Add(Instantiate(blockList[type], blockObject).GetComponent<Block>());
             blockPool[blockPool.Count - 1].gameObject.SetActive(false);
 
             return blockPool[blockPool.Count - 1];
@@ -355,6 +398,7 @@ public class Map : MonoBehaviour
 
                             i = 9;
                             j = 7;
+
                             break;
                         }
                     }
@@ -375,6 +419,7 @@ public class Map : MonoBehaviour
 
                                 i = 7;
                                 j = 9;
+
                                 break;
                             }
                         }
@@ -431,11 +476,12 @@ public class Map : MonoBehaviour
                         }
                         else
                         {
-                            if (posI + 2 < blocks.Count && blockType == blocks[posI + 2][posJ].blockType)
+                            if (posI + 2 < blocks.Count && blockType == blocks[posI + 2][posJ].blockType) // 4개가 같은지 확인
                             {
-                                if (posI + 3 < blocks.Count && blockType == blocks[posI + 3][posJ].blockType)
+                                if (posI + 3 < blocks.Count && blockType == blocks[posI + 3][posJ].blockType) //5개가 같은지 확인
                                 {
                                     blocks[posI + 3][posJ].gameObject.SetActive(false);
+                                    GamePlayManager.Instance.BlockParticle(blocks[posI + 3][posJ]); //5번째 블록 이펙트
                                     blockCount++;
 
                                     specialBlockType = eBlockType.UNICORN;
@@ -445,7 +491,8 @@ public class Map : MonoBehaviour
                                     specialBlockType = eBlockType.LEAF;
                                 }
 
-                                blocks[posI + 2][posJ].gameObject.SetActive(false);
+                                blocks[posI + 2][posJ].gameObject.SetActive(false); //4번째 블록 이펙트
+                                GamePlayManager.Instance.BlockParticle(blocks[posI + 2][posJ]);
                                 blockCount++;
                             }
                         }
@@ -463,11 +510,12 @@ public class Map : MonoBehaviour
                         }
                         else
                         {
-                            if (posJ + 2 < blocks[0].Count && blockType == blocks[posI][posJ + 2].blockType)
+                            if (posJ + 2 < blocks[0].Count && blockType == blocks[posI][posJ + 2].blockType)  // 4개가 같은지 확인
                             {
-                                if (posJ + 3 < blocks[0].Count && blockType == blocks[posI][posJ + 3].blockType)
+                                if (posJ + 3 < blocks[0].Count && blockType == blocks[posI][posJ + 3].blockType) // 5개가 같은지 확인
                                 {
                                     blocks[posI][posJ + 3].gameObject.SetActive(false);
+                                    GamePlayManager.Instance.BlockParticle(blocks[posI][posJ + 3]); //5번째 블록 이펙트
                                     blockCount++;
 
                                     specialBlockType = eBlockType.UNICORN;
@@ -478,6 +526,7 @@ public class Map : MonoBehaviour
                                 }
 
                                 blocks[posI][posJ + 2].gameObject.SetActive(false);
+                                blocks[posI][posJ + 2].gameObject.SetActive(false); //4번째 블록 이펙트
                                 blockCount++;
                             }
                         }
@@ -507,12 +556,20 @@ public class Map : MonoBehaviour
             blocks[middleX - 1][middleY].gameObject.SetActive(false);
             blocks[middleX][middleY].gameObject.SetActive(false);
             blocks[middleX + 1][middleY].gameObject.SetActive(false);
+
+            GamePlayManager.Instance.BlockParticle(blocks[middleX - 1][middleY]); //1번째 블록 이펙트
+            GamePlayManager.Instance.BlockParticle(blocks[middleX][middleY]); //2번째 블록 이펙트
+            GamePlayManager.Instance.BlockParticle(blocks[middleX + 1][middleY]); //3번째 블록 이펙트
         }
         else
         {
             blocks[middleX][middleY - 1].gameObject.SetActive(false);
             blocks[middleX][middleY].gameObject.SetActive(false);
             blocks[middleX][middleY + 1].gameObject.SetActive(false);
+
+            GamePlayManager.Instance.BlockParticle(blocks[middleX][middleY - 1]); //1번째 블록 이펙트
+            GamePlayManager.Instance.BlockParticle(blocks[middleX][middleY]); //2번째 블록 이펙트
+            GamePlayManager.Instance.BlockParticle(blocks[middleX][middleY + 1]); //3번째 블록 이펙트
         }
     }
 
@@ -620,6 +677,8 @@ public class Map : MonoBehaviour
         for (int i = 0; i < 2; i++)
         {
             blocks[posX[i]][posY[i]].gameObject.SetActive(false);
+
+            GamePlayManager.Instance.BlockParticle(blocks[posX[i]][posY[i]]);
         }
     }
 }

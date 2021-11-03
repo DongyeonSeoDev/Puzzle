@@ -90,6 +90,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   blockType: 0
+  effectTexture: {fileID: 2800000, guid: e50f356f91de4cb4bac50897b510f69c, type: 3}
 --- !u!114 &-8560591384817047708
 MonoBehaviour:
   m_ObjectHideFlags: 0

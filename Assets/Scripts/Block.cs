@@ -4,12 +4,13 @@ using UnityEngine.EventSystems;
 
 public enum eBlockType
 {
-    RED, BLUE, PURPLE, ORANGE, GREEN, UNICORN, BOMB, LEAF
+    RED, BLUE, BROWN, ORANGE, GREEN, UNICORN, BOMB, LEAF, GIFTBOX
 }
 
 public class Block : MonoBehaviour
 {
     public eBlockType blockType;
+    public Texture2D effectTexture;
 
     private EventTrigger trigger;
     private EventTrigger.Entry enter = new EventTrigger.Entry();

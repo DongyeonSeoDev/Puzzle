@@ -40,7 +40,6 @@ public class GamePlayManager : MonoBehaviour
     [SerializeField] private eClearConditions[] clearConditions;
     [SerializeField] private BreakingBlockClear[] breakingblockClears = null;
 
-
     private int starCount = 0;
     private int score = 0;
 
@@ -49,6 +48,8 @@ public class GamePlayManager : MonoBehaviour
     private bool isLimitCountTextColorChange = false;
 
     private event Action<Block, int> clearConditionCheck;
+
+    public bool gameEnd = false;
 
     private static GamePlayManager instance = null;
 
@@ -145,6 +146,16 @@ public class GamePlayManager : MonoBehaviour
         clearConditionCheck(block, count);
     }
 
+    public void BlockParticle(Block block)
+    {
+        ParticleManager.StartParticle(BlockPosition(block), block.effectTexture);
+    }
+
+    private Vector3 BlockPosition(Block block)
+    {
+        return block.transform.position;
+    }
+
     private void AddScore(int count)
     {
         score += count * addScores;
@@ -175,17 +186,29 @@ public class GamePlayManager : MonoBehaviour
 
     private void SetExplanationText(int count)
     {
+        SetScoreText();
+
         string[] str = explanations[stageNumber].Split('n');
+        count = Mathf.Clamp(count, 0, 1000);
         explanationText.text = str[0] + count + str[1];
     }
 
     private void GameClear()
     {
         Debug.Log("게임 클리어");
+
+        gameEnd = true;
+        FeverTime();
     }
 
     private void GameOver()
     {
+        gameEnd = true;
         Debug.Log("게임 오버");
+    }
+
+    private void FeverTime()
+    {
+        Debug.Log("FeverTime()");
     }
 }
