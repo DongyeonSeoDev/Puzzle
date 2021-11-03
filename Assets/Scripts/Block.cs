@@ -4,7 +4,7 @@ using UnityEngine.EventSystems;
 
 public enum eBlockType
 {
-    RED, BLUE, BROWN, ORANGE, GREEN, UNICORN, BOMB, LEAF, GIFTBOX
+    RED, BLUE, BROWN, ORANGE, GREEN, UNICORN, BOMB, LEAF, GIFTBOX, BARRICADE
 }
 
 public class Block : MonoBehaviour

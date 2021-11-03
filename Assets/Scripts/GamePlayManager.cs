@@ -18,6 +18,12 @@ public class BreakingBlockClear
 }
 
 [System.Serializable]
+public class SetBarricade
+{
+    public Vector2Int[] position;
+}
+
+[System.Serializable]
 public struct StageStarPoint
 {
     public int[] starPoint;
@@ -48,6 +54,8 @@ public class GamePlayManager : MonoBehaviour
     [SerializeField] private CanvasGroup gameOverPanel;
 
     [SerializeField] private Button[] closeButtons;
+
+    public SetBarricade[] barricade;
 
     private int starCount = 0;
     private int score = 0;

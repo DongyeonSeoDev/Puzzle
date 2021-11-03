@@ -2868,6 +2868,7 @@ MonoBehaviour:
   - {fileID: 1622001630892893709, guid: 5982d8a8431b6254482f96faece4946b, type: 3}
   - {fileID: 8981391064744946032, guid: 83c9fb39dc1fbdd48acc1b942c925737, type: 3}
   - {fileID: 8955161916117722896, guid: 2973809e3f6ee3c408ec1dd9fc2aa0ec, type: 3}
+  - {fileID: 5240834630334644279, guid: bd89e4a984f7c5349bc4611715a10af6, type: 3}
   blockPool: []
 --- !u!4 &492879370
 Transform:
@@ -7270,6 +7271,27 @@ MonoBehaviour:
   closeButtons:
   - {fileID: 684659156}
   - {fileID: 1673573762}
+  barricade:
+  - position:
+    - {x: 4, y: 4}
+  - position:
+    - {x: 4, y: 4}
+  - position:
+    - {x: 4, y: 4}
+  - position:
+    - {x: 4, y: 4}
+  - position:
+    - {x: 4, y: 4}
+  - position:
+    - {x: 4, y: 4}
+  - position:
+    - {x: 4, y: 4}
+  - position:
+    - {x: 4, y: 4}
+  - position:
+    - {x: 4, y: 4}
+  - position:
+    - {x: 4, y: 4}
   stageNumber: 0
   gameEnd: 0
 --- !u!4 &1427594582

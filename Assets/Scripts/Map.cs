@@ -63,6 +63,14 @@ public class Map : MonoBehaviour
 
     private void Start()
     {
+        foreach (var barricade in GamePlayManager.Instance.barricade[GamePlayManager.Instance.stageNumber].position)
+        {
+            blocks[barricade.x][barricade.y].gameObject.SetActive(false);
+            blocks[barricade.x][barricade.y] = CreateBlock((int)eBlockType.BARRICADE);
+            blocks[barricade.x][barricade.y].transform.position = blockPositions[barricade.x][barricade.y].position;
+            blocks[barricade.x][barricade.y].gameObject.SetActive(true);
+        }
+
         GamePlayManager.Instance.gameClearEvent += () =>
         {
             StartCoroutine(CheckSpecialBlock());
@@ -89,8 +97,9 @@ public class Map : MonoBehaviour
 
     private void UpdateBlock()
     {
-        if (currentBlock == null)
+        if (currentBlock == null || currentBlock.blockType == eBlockType.BARRICADE)
         {
+            currentBlock = null;
             return;
         }
 
@@ -201,6 +210,12 @@ public class Map : MonoBehaviour
                     }
                 }
 
+                if (blocks[blockX + (int)moveY][blockY + (int)moveX].blockType == eBlockType.BARRICADE)
+                {
+                    currentBlock = null;
+                    return;
+                }
+
                 blocks[blockX][blockY].gameObject.SetActive(false);
 
                 GamePlayManager.Instance.BlockBroken(blocks[blockX + (int)moveY][blockY + (int)moveX], breakBlockCount);
@@ -235,6 +250,11 @@ public class Map : MonoBehaviour
                     {
                         if (i - 1 >= 0 && !blocks[i - 1][j].gameObject.activeSelf && blocks[i][j].gameObject.activeSelf)
                         {
+                            if (blocks[i - 1][j].blockType == eBlockType.BARRICADE || blocks[i][j].blockType == eBlockType.BARRICADE)
+                            {
+                                continue;
+                            }
+
                             isChange = true;
 
                             var tempBlock = blocks[i - 1][j];
@@ -787,8 +807,6 @@ public class Map : MonoBehaviour
             blocks[i][j] = CreateBlock((int)eBlockType.GIFTBOX);
             blocks[i][j].transform.position = blockPositions[i][j].position;
             blocks[i][j].gameObject.SetActive(true);
-
-            Debug.Log("»ý¼º");
         }
     }
 }
