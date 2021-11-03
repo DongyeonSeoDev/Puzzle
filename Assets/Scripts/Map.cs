@@ -61,6 +61,14 @@ public class Map : MonoBehaviour
         CheckBlock(true, false);
     }
 
+    private void Start()
+    {
+        GamePlayManager.Instance.gameClearEvent += () =>
+        {
+            StartCoroutine(CheckSpecialBlock());
+        };
+    }
+
     private void Update()
     {
         if (GamePlayManager.Instance.gameEnd)
@@ -75,199 +83,204 @@ public class Map : MonoBehaviour
 
         if (Input.GetMouseButtonUp(0))
         {
-            if (currentBlock == null)
+            UpdateBlock();
+        }
+    }
+
+    private void UpdateBlock()
+    {
+        if (currentBlock == null)
+        {
+            return;
+        }
+
+        if (BlockTypeCheck(currentBlock, eBlockType.LEAF))
+        {
+            for (int i = 0; i < blocks.Count; i++)
             {
-                return;
+                blocks[blockX][i].gameObject.SetActive(false);
+                blocks[i][blockY].gameObject.SetActive(false);
+
+                GamePlayManager.Instance.BlockBroken(blocks[blockX][i], 1);
+                GamePlayManager.Instance.BlockBroken(blocks[i][blockY], 1);
+
+                GamePlayManager.Instance.BlockParticle(blocks[blockX][i]);
+                GamePlayManager.Instance.BlockParticle(blocks[i][blockY]);
             }
-
-            if (BlockTypeCheck(currentBlock, eBlockType.LEAF))
+        }
+        else if (BlockTypeCheck(currentBlock, eBlockType.BOMB))
+        {
+            for (int i = 0; i < 5; i++)
             {
-                for (int i = 0; i < blocks.Count; i++)
+                for (int j = 0; j < 5; j++)
                 {
-                    blocks[blockX][i].gameObject.SetActive(false);
-                    blocks[i][blockY].gameObject.SetActive(false);
-
-                    GamePlayManager.Instance.BlockBroken(blocks[blockX][i], 1);
-                    GamePlayManager.Instance.BlockBroken(blocks[i][blockY], 1);
-
-                    GamePlayManager.Instance.BlockParticle(blocks[blockX][i]);
-                    GamePlayManager.Instance.BlockParticle(blocks[i][blockY]);
-                }
-            }
-            else if (BlockTypeCheck(currentBlock, eBlockType.BOMB))
-            {
-                for (int i = 0; i < 5; i++)
-                {
-                    for (int j = 0; j < 5; j++)
+                    if (blockX - 2 + i >= 0 && blockX - 2 + i < blocks.Count && blockY - 2 + j >= 0 && blockY - 2 + j < blocks[0].Count)
                     {
-                        if (blockX - 2 + i >= 0 && blockX - 2 + i < blocks.Count && blockY - 2 + j >= 0 && blockY - 2 + j < blocks[0].Count)
-                        {
-                            blocks[blockX - 2 + i][blockY - 2 + j].gameObject.SetActive(false);
+                        blocks[blockX - 2 + i][blockY - 2 + j].gameObject.SetActive(false);
 
-                            GamePlayManager.Instance.BlockBroken(blocks[blockX - 2 + i][blockY - 2 + j], 1);
+                        GamePlayManager.Instance.BlockBroken(blocks[blockX - 2 + i][blockY - 2 + j], 1);
 
-                            GamePlayManager.Instance.BlockParticle(blocks[blockX - 2 + i][blockY - 2 + j]);
-                        }
+                        GamePlayManager.Instance.BlockParticle(blocks[blockX - 2 + i][blockY - 2 + j]);
                     }
                 }
             }
-            else if (BlockTypeCheck(currentBlock, eBlockType.GIFTBOX))
+        }
+        else if (BlockTypeCheck(currentBlock, eBlockType.GIFTBOX))
+        {
+            for (int i = 0; i < 3; i++)
             {
-                for (int i = 0; i < 3; i++)
+                for (int j = 0; j < 3; j++)
                 {
-                    for (int j = 0; j < 3; j++)
+                    if (blockX - 1 + i >= 0 && blockX - 1 + i < blocks.Count && blockY - 1 + j >= 0 && blockY - 1 + j < blocks[0].Count)
                     {
-                        if (blockX - 1 + i >= 0 && blockX - 1 + i < blocks.Count && blockY - 1 + j >= 0 && blockY - 1 + j < blocks[0].Count)
-                        {
-                            blocks[blockX - 1 + i][blockY - 1 + j].gameObject.SetActive(false);
+                        blocks[blockX - 1 + i][blockY - 1 + j].gameObject.SetActive(false);
 
-                            GamePlayManager.Instance.BlockBroken(blocks[blockX - 1 + i][blockY - 1 + j], 1);
+                        GamePlayManager.Instance.BlockBroken(blocks[blockX - 1 + i][blockY - 1 + j], 1);
 
-                            GamePlayManager.Instance.BlockParticle(blocks[blockX - 1 + i][blockY - 1 + j]);
-                        }
+                        GamePlayManager.Instance.BlockParticle(blocks[blockX - 1 + i][blockY - 1 + j]);
                     }
+                }
+            }
+        }
+        else
+        {
+            buttonUp = Input.mousePosition;
+
+            moveX = buttonDown.x - buttonUp.x;
+            moveY = buttonDown.y - buttonUp.y;
+
+            if (Mathf.Abs(moveX) > Mathf.Abs(moveY))
+            {
+                if (moveX > 0)
+                {
+                    moveX = -1;
+                    moveY = 0;
+                }
+                else
+                {
+                    moveX = 1;
+                    moveY = 0;
                 }
             }
             else
             {
-                buttonUp = Input.mousePosition;
-
-                moveX = buttonDown.x - buttonUp.x;
-                moveY = buttonDown.y - buttonUp.y;
-
-                if (Mathf.Abs(moveX) > Mathf.Abs(moveY))
+                if (moveY > 0)
                 {
-                    if (moveX > 0)
-                    {
-                        moveX = -1;
-                        moveY = 0;
-                    }
-                    else
-                    {
-                        moveX = 1;
-                        moveY = 0;
-                    }
+                    moveX = 0;
+                    moveY = -1;
                 }
                 else
                 {
-                    if (moveY > 0)
-                    {
-                        moveX = 0;
-                        moveY = -1;
-                    }
-                    else
-                    {
-                        moveX = 0;
-                        moveY = 1;
-                    }
-                }
-
-                if ((blockX + (int)moveY) < 0 || (blockX + (int)moveY) > 8 || (blockY + (int)moveX) < 0 || (blockY + (int)moveX) > 8)
-                {
-                    currentBlock = null;
-                    return;
-                }
-
-                if (BlockTypeCheck(currentBlock, eBlockType.UNICORN))
-                {
-                    eBlockType eventBlockType = blocks[blockX + (int)moveY][blockY + (int)moveX].blockType;
-                    int breakBlockCount = 0;
-
-                    for (int i = 0; i < blocks.Count; i++)
-                    {
-                        for (int j = 0; j < blocks[0].Count; j++)
-                        {
-                            if (blocks[i][j].blockType == eventBlockType)
-                            {
-                                blocks[i][j].gameObject.SetActive(false);
-                                breakBlockCount++;
-
-                                GamePlayManager.Instance.BlockParticle(blocks[i][j]);
-                            }
-                        }
-                    }
-
-                    blocks[blockX][blockY].gameObject.SetActive(false);
-
-                    GamePlayManager.Instance.BlockBroken(blocks[blockX + (int)moveY][blockY + (int)moveX], breakBlockCount);
-                    GamePlayManager.Instance.BlockBroken(blocks[blockX][blockY], 1);
-
-                    GamePlayManager.Instance.BlockParticle(blocks[blockX][blockY]);
-                }
-                else
-                {
-                    var tempBlock = blocks[blockX + (int)moveY][blockY + (int)moveX];
-                    blocks[blockX + (int)moveY][blockY + (int)moveX] = currentBlock;
-                    blocks[blockX][blockY] = tempBlock;
-
-                    if (CheckBlock(false, true))
-                    {
-                        return;
-                    }
+                    moveX = 0;
+                    moveY = 1;
                 }
             }
 
-            while (true)
+            if ((blockX + (int)moveY) < 0 || (blockX + (int)moveY) > 8 || (blockY + (int)moveX) < 0 || (blockY + (int)moveX) > 8)
             {
-                bool isChange = true;
+                currentBlock = null;
+                return;
+            }
 
-                while (isChange)
+            if (BlockTypeCheck(currentBlock, eBlockType.UNICORN))
+            {
+                eBlockType eventBlockType = blocks[blockX + (int)moveY][blockY + (int)moveX].blockType;
+                int breakBlockCount = 0;
+
+                for (int i = 0; i < blocks.Count; i++)
                 {
-                    isChange = false;
-
-                    for (int i = 0; i < blocks.Count; i++)
+                    for (int j = 0; j < blocks[0].Count; j++)
                     {
-                        for (int j = 0; j < blocks[i].Count; j++)
+                        if (blocks[i][j].blockType == eventBlockType)
                         {
-                            if (i - 1 >= 0 && !blocks[i - 1][j].gameObject.activeSelf && blocks[i][j].gameObject.activeSelf)
-                            {
-                                isChange = true;
+                            blocks[i][j].gameObject.SetActive(false);
+                            breakBlockCount++;
 
-                                var tempBlock = blocks[i - 1][j];
-                                blocks[i - 1][j] = blocks[i][j];
-                                blocks[i][j] = tempBlock;
-
-                                blocks[i][j].transform.position = blockPositions[i][j].position;
-                                blocks[i - 1][j].transform.position = blockPositions[i - 1][j].position;
-                            }
+                            GamePlayManager.Instance.BlockParticle(blocks[i][j]);
                         }
                     }
                 }
+
+                blocks[blockX][blockY].gameObject.SetActive(false);
+
+                GamePlayManager.Instance.BlockBroken(blocks[blockX + (int)moveY][blockY + (int)moveX], breakBlockCount);
+                GamePlayManager.Instance.BlockBroken(blocks[blockX][blockY], 1);
+
+                GamePlayManager.Instance.BlockParticle(blocks[blockX][blockY]);
+            }
+            else
+            {
+                var tempBlock = blocks[blockX + (int)moveY][blockY + (int)moveX];
+                blocks[blockX + (int)moveY][blockY + (int)moveX] = currentBlock;
+                blocks[blockX][blockY] = tempBlock;
+
+                if (CheckBlock(false, true))
+                {
+                    return;
+                }
+            }
+        }
+
+        while (true)
+        {
+            bool isChange = true;
+
+            while (isChange)
+            {
+                isChange = false;
 
                 for (int i = 0; i < blocks.Count; i++)
                 {
                     for (int j = 0; j < blocks[i].Count; j++)
                     {
-                        if (blocks[i][j] == null || !blocks[i][j].gameObject.activeSelf)
+                        if (i - 1 >= 0 && !blocks[i - 1][j].gameObject.activeSelf && blocks[i][j].gameObject.activeSelf)
                         {
-                            int random = Random.Range(0, 100);
-                            Block block;
+                            isChange = true;
 
-                            if (random == 1)
-                            {
-                                block = CreateBlock((int)eBlockType.GIFTBOX);
-                            }
-                            else 
-                            {
-                                block = CreateBlock(Random.Range(0, 5));
-                            }
+                            var tempBlock = blocks[i - 1][j];
+                            blocks[i - 1][j] = blocks[i][j];
+                            blocks[i][j] = tempBlock;
 
-                            block.transform.position = blockPositions[i][j].position;
-                            block.gameObject.SetActive(true);
-                            blocks[i][j] = block;
+                            blocks[i][j].transform.position = blockPositions[i][j].position;
+                            blocks[i - 1][j].transform.position = blockPositions[i - 1][j].position;
                         }
                     }
                 }
+            }
 
-                if (CheckBlock(false, false))
+            for (int i = 0; i < blocks.Count; i++)
+            {
+                for (int j = 0; j < blocks[i].Count; j++)
                 {
-                    GamePlayManager.Instance.MoveBlock();
-                    currentBlock = null;
-                    break;
+                    if (blocks[i][j] == null || !blocks[i][j].gameObject.activeSelf)
+                    {
+                        int random = Random.Range(0, 100);
+                        Block block;
+
+                        if (random == 1)
+                        {
+                            block = CreateBlock((int)eBlockType.GIFTBOX);
+                        }
+                        else
+                        {
+                            block = CreateBlock(Random.Range(0, 5));
+                        }
+
+                        block.transform.position = blockPositions[i][j].position;
+                        block.gameObject.SetActive(true);
+                        blocks[i][j] = block;
+                    }
                 }
-            } //end of while
-        } //end of if
-    } //end of Update
+            }
+
+            if (CheckBlock(false, false))
+            {
+                GamePlayManager.Instance.MoveBlock();
+                currentBlock = null;
+                break;
+            }
+        } //end of while
+    }
 
     public static void Move(Block block)
     {
@@ -679,6 +692,103 @@ public class Map : MonoBehaviour
             blocks[posX[i]][posY[i]].gameObject.SetActive(false);
 
             GamePlayManager.Instance.BlockParticle(blocks[posX[i]][posY[i]]);
+        }
+    }
+
+    private IEnumerator CheckSpecialBlock()
+    {
+        bool isChange = true;
+
+        while (isChange)
+        {
+            isChange = false;
+
+            for (int i = 0; i < blocks.Count; i++)
+            {
+                for (int j = 0; j < blocks[0].Count; j++)
+                {
+                    if (BlockTypeCheck(i, j, eBlockType.UNICORN) || BlockTypeCheck(i, j, eBlockType.BOMB) || BlockTypeCheck(i, j, eBlockType.LEAF) || BlockTypeCheck(i, j, eBlockType.GIFTBOX))
+                    {
+                        Move(blocks[i][j]);
+                        UpdateBlock();
+                        
+                        isChange = true;
+
+                        yield return new WaitForSeconds(0.1f);
+                    }
+                }
+            }
+        }
+
+        yield return new WaitForSeconds(1.5f);
+
+        SetGiftBox();
+
+        yield return new WaitForSeconds(1.5f);
+
+        isChange = true;
+
+        while (isChange)
+        {
+            isChange = false;
+
+            for (int i = 0; i < blocks.Count; i++)
+            {
+                for (int j = 0; j < blocks[0].Count; j++)
+                {
+                    if (BlockTypeCheck(i, j, eBlockType.UNICORN) || BlockTypeCheck(i, j, eBlockType.BOMB) || BlockTypeCheck(i, j, eBlockType.LEAF) || BlockTypeCheck(i, j, eBlockType.GIFTBOX))
+                    {
+                        Move(blocks[i][j]);
+                        UpdateBlock();
+
+                        isChange = true;
+
+                        yield return new WaitForSeconds(0.1f);
+                    }
+                }
+            }
+        }
+
+        GamePlayManager.Instance.GameClearPanel();
+    }
+
+    private void SetGiftBox()
+    {
+        int i = 0;
+        int j = 0;
+        bool check = false;
+        int count = 0;
+
+        while (GamePlayManager.Instance.limitCountCheck())
+        {
+            count++;
+
+            if (count > 50)
+            {
+                return;
+            }
+
+            check = false;
+
+            while (!check)
+            {
+                check = true;
+
+                i = Random.Range(0, blocks.Count);
+                j = Random.Range(0, blocks[0].Count);
+                
+                if (blocks[i][j].blockType == eBlockType.GIFTBOX)
+                {
+                    check = false;
+                }
+            }
+
+            blocks[i][j].gameObject.SetActive(false);
+            blocks[i][j] = CreateBlock((int)eBlockType.GIFTBOX);
+            blocks[i][j].transform.position = blockPositions[i][j].position;
+            blocks[i][j].gameObject.SetActive(true);
+
+            Debug.Log("»ý¼º");
         }
     }
 }

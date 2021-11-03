@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using DG.Tweening;
 
 public enum eClearConditions
 {
@@ -40,6 +41,14 @@ public class GamePlayManager : MonoBehaviour
     [SerializeField] private eClearConditions[] clearConditions;
     [SerializeField] private BreakingBlockClear[] breakingblockClears = null;
 
+    [SerializeField] private CanvasGroup feverCanvasGroup = null;
+    [SerializeField] private GameObject feverPanel = null;
+
+    [SerializeField] private CanvasGroup gameClearPanel;
+    [SerializeField] private CanvasGroup gameOverPanel;
+
+    [SerializeField] private Button[] closeButtons;
+
     private int starCount = 0;
     private int score = 0;
 
@@ -52,6 +61,11 @@ public class GamePlayManager : MonoBehaviour
     public bool gameEnd = false;
 
     private static GamePlayManager instance = null;
+
+    public event Action gameClearEvent = () =>
+    {
+
+    };
 
     public static GamePlayManager Instance
     {
@@ -83,6 +97,15 @@ public class GamePlayManager : MonoBehaviour
         }
 
         Instance = this;
+
+        foreach (var button in closeButtons)
+        {
+            button.onClick.AddListener(() =>
+            {
+                Debug.Log("닫기");
+                //TODO: Scene 이동
+            });
+        }
     }
 
     private void Start()
@@ -133,6 +156,19 @@ public class GamePlayManager : MonoBehaviour
         {
             GameOver();
         }
+    }
+
+    public bool limitCountCheck()
+    {
+        limitCounts[stageNumber]--;
+        SetLimitCountText();
+
+        if (limitCounts[stageNumber] <= 0)
+        {
+            return false;
+        }
+
+        return true;
     }
 
     public void LimitCountTextColorChange()
@@ -195,20 +231,58 @@ public class GamePlayManager : MonoBehaviour
 
     private void GameClear()
     {
+        if (gameEnd)
+        {
+            return;
+        }
+
         Debug.Log("게임 클리어");
 
         gameEnd = true;
+
         FeverTime();
     }
 
     private void GameOver()
     {
+        if (gameEnd)
+        {
+            return;
+        }
+
         gameEnd = true;
+
         Debug.Log("게임 오버");
+
+        GameOverPanel();
     }
 
     private void FeverTime()
     {
-        Debug.Log("FeverTime()");
+        Sequence sequence = DOTween.Sequence();
+
+        sequence.Append(feverCanvasGroup.DOFade(1f, 0.5f));
+        sequence.Join(feverCanvasGroup.transform.DOMoveY(1f, 0.5f).SetRelative());
+        sequence.Append(feverCanvasGroup.DOFade(0f, 0.5f).SetDelay(0.5f));
+        sequence.Join(feverCanvasGroup.transform.DOMoveY(-1f, 0.5f).SetRelative().OnComplete(() =>
+        {
+            gameClearEvent();
+        }));
+    }
+
+    public void GameClearPanel()
+    {
+        gameClearPanel.interactable = true;
+        gameClearPanel.blocksRaycasts = true;
+
+        gameClearPanel.DOFade(1, 0.5f);
+    }
+
+    private void GameOverPanel()
+    {
+        gameOverPanel.interactable = true;
+        gameOverPanel.blocksRaycasts = true;
+
+        gameOverPanel.DOFade(1, 0.5f);
     }
 }
