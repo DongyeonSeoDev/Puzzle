@@ -164,6 +164,8 @@ public class GamePlayManager : MonoBehaviour
         {
             GameOver();
         }
+
+        SoundManager.SoundPlay(eSoundType.TOUCHSOUND);
     }
 
     public bool limitCountCheck()
@@ -263,6 +265,7 @@ public class GamePlayManager : MonoBehaviour
         Debug.Log("게임 오버");
 
         GameOverPanel();
+        SoundManager.SoundPlay(eSoundType.GAMEOVER);
     }
 
     private void FeverTime()
@@ -284,6 +287,8 @@ public class GamePlayManager : MonoBehaviour
         gameClearPanel.blocksRaycasts = true;
 
         gameClearPanel.DOFade(1, 0.5f);
+
+        SoundManager.SoundPlay(eSoundType.GAMECLEAR);
     }
 
     private void GameOverPanel()
