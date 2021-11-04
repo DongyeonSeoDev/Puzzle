@@ -7734,11 +7734,11 @@ MonoBehaviour:
   - "\uBE68\uAC04\uC0C9 n\uAC1C \uC81C\uAC70"
   - "\uAC08\uC0C9 n\uAC1C \uC81C\uAC70"
   - "\uC8FC\uD669\uC0C9 n\uAC1C \uC81C\uAC70"
-  - "\uCD08\uB85D\uC0C9 n\uAC1C \uD30C\uB780\uC0C9 n\uAC1C \uC81C\uAC70"
-  - "\uBE68\uAC04\uC0C9 n\uAC1C \uAC08\uC0C9 n\uAC1C \uC81C\uAC70"
-  - "\uC8FC\uD669\uC0C9 n\uAC1C \uCD08\uB85D\uC0C9 n\uAC1C \uC81C\uAC70"
-  - "\uD30C\uB780\uC0C9 n\uAC1C \uAC08\uC0C9 n\uAC1C \uC81C\uAC70"
-  - "\uC8FC\uD669\uC0C9 n\uAC1C \uBE68\uAC04\uC0C9 n\uAC1C \uC81C\uAC70"
+  - "\uCD08\uB85D\uC0C9 n\uAC1C   \uD30C\uB780\uC0C9 n\uAC1C \uC81C\uAC70"
+  - "\uBE68\uAC04\uC0C9 n\uAC1C   \uAC08\uC0C9 n\uAC1C \uC81C\uAC70"
+  - "\uC8FC\uD669\uC0C9 n\uAC1C   \uCD08\uB85D\uC0C9 n\uAC1C \uC81C\uAC70"
+  - "\uD30C\uB780\uC0C9 n\uAC1C   \uAC08\uC0C9 n\uAC1C \uC81C\uAC70"
+  - "\uC8FC\uD669\uC0C9 n\uAC1C   \uBE68\uAC04\uC0C9 n\uAC1C \uC81C\uAC70"
   starScore:
   - starPoint: c8000000f4010000e8030000
   - starPoint: 90010000e8030000d0070000
@@ -7832,7 +7832,7 @@ MonoBehaviour:
     - {x: 4, y: 4}
   - position:
     - {x: 4, y: 4}
-  stageNumber: 0
+  stageNumber: 9
   gameEnd: 0
 --- !u!4 &1427594582
 Transform:
