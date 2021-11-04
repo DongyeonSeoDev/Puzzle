@@ -13,6 +13,9 @@ public class Map : MonoBehaviour
     [SerializeField] private List<GameObject> blockList = new List<GameObject>();
     [SerializeField] private List<Block> blockPool = new List<Block>();
 
+    [SerializeField] private Sprite[] animalSprites = null;
+    [SerializeField] private Texture2D[] animalTexture = null;
+
     private Transform[][] blockPositions = new Transform[9][];
     private List<List<Block>> blocks = new List<List<Block>>();
 
@@ -71,6 +74,26 @@ public class Map : MonoBehaviour
             blocks[barricade.x][barricade.y].gameObject.SetActive(true);
         }
 
+        if (GamePlayManager.Instance.stageNumber >= 2)
+        {
+            Vector2Int animalPos = GamePlayManager.Instance.animalPos[GamePlayManager.Instance.stageNumber];
+            Vector2Int animal2Pos = GamePlayManager.Instance.animal2Pos[GamePlayManager.Instance.stageNumber];
+
+            blocks[animalPos.x][animalPos.y].gameObject.SetActive(false);
+            blocks[animalPos.x][animalPos.y] = CreateBlock((int)eBlockType.ANIMALS);
+            blocks[animalPos.x][animalPos.y].transform.position = blockPositions[animalPos.x][animalPos.y].position;
+            blocks[animalPos.x][animalPos.y].image.sprite = animalSprites[GamePlayManager.Instance.stageNumber * 2];
+            blocks[animalPos.x][animalPos.y].effectTexture = animalTexture[GamePlayManager.Instance.stageNumber * 2];
+            blocks[animalPos.x][animalPos.y].gameObject.SetActive(true);
+
+            blocks[animal2Pos.x][animal2Pos.y].gameObject.SetActive(false);
+            blocks[animal2Pos.x][animal2Pos.y] = CreateBlock((int)eBlockType.ANIMALS);
+            blocks[animal2Pos.x][animal2Pos.y].transform.position = blockPositions[animal2Pos.x][animal2Pos.y].position;
+            blocks[animalPos.x][animalPos.y].image.sprite = animalSprites[GamePlayManager.Instance.stageNumber * 2 + 1];
+            blocks[animalPos.x][animalPos.y].effectTexture = animalTexture[GamePlayManager.Instance.stageNumber * 2 + 1];
+            blocks[animal2Pos.x][animal2Pos.y].gameObject.SetActive(true);
+        }
+
         GamePlayManager.Instance.gameClearEvent += () =>
         {
             StartCoroutine(CheckSpecialBlock());
@@ -95,7 +118,7 @@ public class Map : MonoBehaviour
         }
     }
 
-    private void UpdateBlock()
+    private void UpdateBlock(bool gameClear = false)
     {
         if (currentBlock == null || currentBlock.blockType == eBlockType.BARRICADE)
         {
@@ -107,14 +130,21 @@ public class Map : MonoBehaviour
         {
             for (int i = 0; i < blocks.Count; i++)
             {
-                blocks[blockX][i].gameObject.SetActive(false);
-                blocks[i][blockY].gameObject.SetActive(false);
+                if (blocks[blockX][i].blockType != eBlockType.ANIMALS)
+                {
+                    blocks[blockX][i].gameObject.SetActive(false);
 
-                GamePlayManager.Instance.BlockBroken(blocks[blockX][i], 1);
-                GamePlayManager.Instance.BlockBroken(blocks[i][blockY], 1);
+                    GamePlayManager.Instance.BlockBroken(blocks[blockX][i], 1);
+                    GamePlayManager.Instance.BlockParticle(blocks[blockX][i]);
+                }
 
-                GamePlayManager.Instance.BlockParticle(blocks[blockX][i]);
-                GamePlayManager.Instance.BlockParticle(blocks[i][blockY]);
+                if (blocks[i][blockY].blockType != eBlockType.ANIMALS)
+                {
+                    blocks[i][blockY].gameObject.SetActive(false);
+
+                    GamePlayManager.Instance.BlockBroken(blocks[i][blockY], 1);
+                    GamePlayManager.Instance.BlockParticle(blocks[i][blockY]);
+                }
             }
         }
         else if (BlockTypeCheck(currentBlock, eBlockType.BOMB))
@@ -125,11 +155,13 @@ public class Map : MonoBehaviour
                 {
                     if (blockX - 2 + i >= 0 && blockX - 2 + i < blocks.Count && blockY - 2 + j >= 0 && blockY - 2 + j < blocks[0].Count)
                     {
-                        blocks[blockX - 2 + i][blockY - 2 + j].gameObject.SetActive(false);
+                        if (blocks[blockX - 2 + i][blockY - 2 + j].blockType != eBlockType.ANIMALS)
+                        {
+                            blocks[blockX - 2 + i][blockY - 2 + j].gameObject.SetActive(false);
 
-                        GamePlayManager.Instance.BlockBroken(blocks[blockX - 2 + i][blockY - 2 + j], 1);
-
-                        GamePlayManager.Instance.BlockParticle(blocks[blockX - 2 + i][blockY - 2 + j]);
+                            GamePlayManager.Instance.BlockBroken(blocks[blockX - 2 + i][blockY - 2 + j], 1);
+                            GamePlayManager.Instance.BlockParticle(blocks[blockX - 2 + i][blockY - 2 + j]);
+                        }
                     }
                 }
             }
@@ -142,13 +174,24 @@ public class Map : MonoBehaviour
                 {
                     if (blockX - 1 + i >= 0 && blockX - 1 + i < blocks.Count && blockY - 1 + j >= 0 && blockY - 1 + j < blocks[0].Count)
                     {
-                        blocks[blockX - 1 + i][blockY - 1 + j].gameObject.SetActive(false);
+                        if (blocks[blockX - 1 + i][blockY - 1 + j].blockType != eBlockType.ANIMALS)
+                        {
+                            blocks[blockX - 1 + i][blockY - 1 + j].gameObject.SetActive(false);
 
-                        GamePlayManager.Instance.BlockBroken(blocks[blockX - 1 + i][blockY - 1 + j], 1);
-
-                        GamePlayManager.Instance.BlockParticle(blocks[blockX - 1 + i][blockY - 1 + j]);
+                            GamePlayManager.Instance.BlockBroken(blocks[blockX - 1 + i][blockY - 1 + j], 1);
+                            GamePlayManager.Instance.BlockParticle(blocks[blockX - 1 + i][blockY - 1 + j]);
+                        } 
                     }
                 }
+            }
+        }
+        else if (BlockTypeCheck(currentBlock, eBlockType.ANIMALS))
+        {
+            if (blockX == 0 || blockY == 0 || blockX == 8 || blockY == 8)
+            {
+                currentBlock.gameObject.SetActive(false);
+                GamePlayManager.Instance.BlockBroken(currentBlock, 15);
+                GamePlayManager.Instance.BlockParticle(currentBlock);
             }
         }
         else
@@ -295,7 +338,7 @@ public class Map : MonoBehaviour
 
             if (CheckBlock(false, false))
             {
-                GamePlayManager.Instance.MoveBlock();
+                GamePlayManager.Instance.MoveBlock(gameClear);
                 currentBlock = null;
                 break;
             }
@@ -730,7 +773,7 @@ public class Map : MonoBehaviour
                     if (BlockTypeCheck(i, j, eBlockType.UNICORN) || BlockTypeCheck(i, j, eBlockType.BOMB) || BlockTypeCheck(i, j, eBlockType.LEAF) || BlockTypeCheck(i, j, eBlockType.GIFTBOX))
                     {
                         Move(blocks[i][j]);
-                        UpdateBlock();
+                        UpdateBlock(true);
                         
                         isChange = true;
 

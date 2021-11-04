@@ -63,6 +63,9 @@ public class GamePlayManager : MonoBehaviour
 
     public SetBarricade[] barricade;
 
+    public Vector2Int[] animalPos;
+    public Vector2Int[] animal2Pos;
+
     private int starCount = 0;
     private int score = 0;
 
@@ -189,21 +192,24 @@ public class GamePlayManager : MonoBehaviour
         SetLimitCountText();
     }
 
-    public void MoveBlock()
+    public void MoveBlock(bool isGameClear = false)
     {
-        limitCounts[stageNumber]--;
-        SetLimitCountText();
-
-        if (!isLimitCountTextColorChange == limitCounts[stageNumber] <= 3)
+        if (!isGameClear)
         {
-            isLimitCountTextColorChange = true;
+            limitCounts[stageNumber]--;
+            SetLimitCountText();
 
-            LimitCountTextColorChange();
-        }
+            if (!isLimitCountTextColorChange == limitCounts[stageNumber] <= 3)
+            {
+                isLimitCountTextColorChange = true;
 
-        if (limitCounts[stageNumber] <= 0)
-        {
-            GameOver();
+                LimitCountTextColorChange();
+            }
+
+            if (limitCounts[stageNumber] <= 0)
+            {
+                GameOver();
+            }
         }
 
         SoundManager.SoundPlay(eSoundType.TOUCHSOUND);
@@ -211,13 +217,13 @@ public class GamePlayManager : MonoBehaviour
 
     public bool limitCountCheck()
     {
-        limitCounts[stageNumber]--;
-        SetLimitCountText();
-
         if (limitCounts[stageNumber] <= 0)
         {
             return false;
         }
+
+        limitCounts[stageNumber]--;
+        SetLimitCountText();
 
         return true;
     }
@@ -286,7 +292,7 @@ public class GamePlayManager : MonoBehaviour
             string[] str = explanations[stageNumber].Split('n');
             count = Mathf.Clamp(count, 0, 1000);
             count2 = Mathf.Clamp(count2, 0, 1000);
-            explanationText.text = str[0] + count + str[1] + count2 + str[2];
+            explanationText.text = str[0] + count.ToString("00") + str[1] + count2.ToString("00") + str[2];
         }
     }
 
