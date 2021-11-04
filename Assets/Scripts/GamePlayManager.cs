@@ -268,6 +268,8 @@ public class GamePlayManager : MonoBehaviour
             starImage[starCount].sprite = starOnImage;
             starCount++;
 
+            GameManager.Instance.starCount = starCount;
+
             StarCheck();
         }
     }
@@ -347,8 +349,9 @@ public class GamePlayManager : MonoBehaviour
 
         SoundManager.SoundPlay(eSoundType.GAMECLEAR);
 
-        // TODO: ADD SCORE
-        Debug.Log(((float)score * 0.1f) + "의 코인을 얻었습니다.");
+        GameManager.Instance.coin = (int)(score * 0.1f);
+        GameManager.Instance.stageClear = true;
+
     }
 
     private void GameOverPanel()
@@ -357,6 +360,9 @@ public class GamePlayManager : MonoBehaviour
         gameOverPanel.blocksRaycasts = true;
 
         gameOverPanel.DOFade(1, 0.5f);
+
+        GameManager.Instance.coin = 0;
+        GameManager.Instance.stageClear = false;
     }
 
     public void DevelopPanelOpen()

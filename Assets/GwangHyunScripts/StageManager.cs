@@ -11,7 +11,7 @@ public class StageManager : MonoBehaviour
     private int nowStage = 1;
     private int maxStage = 20;
 
-    private int stageIndex = -1;
+    private int stageIndex = 0;
 
     public Image curStage;
 
@@ -21,13 +21,11 @@ public class StageManager : MonoBehaviour
     public List<RectTransform> rect;
 
     public UIManager uIManager;
-    public GameManager gm;
     private StageLock stageLock;
 
 
     private void Awake()
     {
-        DontDestroyOnLoad(this.gameObject);
         buttonTrs = btnObj.GetComponentsInChildren<Button>();
         stageLock = GetComponent<StageLock>();
 
@@ -35,17 +33,13 @@ public class StageManager : MonoBehaviour
         {
             rect.Add(buttonTrs[i].GetComponent<RectTransform>());
         }
-    }
-    private void Start()
-    {
-        curStage.rectTransform.anchoredPosition = new Vector3(rect[stageIndex].localPosition.x,
-                                                rect[stageIndex].localPosition.y + 200f, rect[stageIndex].localPosition.z);
+
         StageClear();
     }
 
     public void StageClear()
     {
-        if(gm.stageClear)
+        if(GameManager.Instance.stageClear)
         {
             nowStage++;
             PlayerPrefs.SetInt("stageUnlock", nowStage);
@@ -55,8 +49,12 @@ public class StageManager : MonoBehaviour
 
             curStage.transform.parent = rect[stageIndex].transform.parent.transform;
             MoveStageAnimation();
+
+            uIManager.StageClear(GameManager.Instance.coin);
+            uIManager.DrawStar(buttonTrs[uIManager.stageLevel].GetComponent<Image>());
         }
     }
+
 
     public void MoveStageAnimation()
     {

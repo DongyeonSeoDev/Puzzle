@@ -15,7 +15,6 @@ public class StageLock : MonoBehaviour
     void Start()
     {
         buttons = StageBtn.GetComponentsInChildren<Button>();
-
         StageUnLock();
     }
     
