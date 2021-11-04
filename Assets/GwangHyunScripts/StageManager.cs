@@ -24,7 +24,7 @@ public class StageManager : MonoBehaviour
     private StageLock stageLock;
 
 
-    private void Awake()
+    private void Start()
     {
         buttonTrs = btnObj.GetComponentsInChildren<Button>();
         stageLock = GetComponent<StageLock>();

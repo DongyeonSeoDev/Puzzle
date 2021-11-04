@@ -50,12 +50,6 @@ public class UIManager : MonoBehaviour
         });
     }
 
-    public void ClickBtn()
-    {
-        
-    }
-
-
     private void Update()
     {
         goldText.text = $"{gold}";
