@@ -52,8 +52,10 @@ public class GamePlayManager : MonoBehaviour
 
     [SerializeField] private CanvasGroup gameClearPanel;
     [SerializeField] private CanvasGroup gameOverPanel;
+    [SerializeField] private CanvasGroup developPanel;
 
     [SerializeField] private Button[] closeButtons;
+    [SerializeField] private Button developButton;
 
     public SetBarricade[] barricade;
 
@@ -67,6 +69,8 @@ public class GamePlayManager : MonoBehaviour
     private event Action<Block, int> clearConditionCheck;
 
     public bool gameEnd = false;
+
+    private bool isDevelopPanelChanging = false;
 
     private static GamePlayManager instance = null;
 
@@ -114,6 +118,11 @@ public class GamePlayManager : MonoBehaviour
                 //TODO: Scene ÀÌµ¿
             });
         }
+
+        developButton.onClick.AddListener(() =>
+        {
+            DevelopPanelClose();
+        });
     }
 
     private void Start()
@@ -297,5 +306,41 @@ public class GamePlayManager : MonoBehaviour
         gameOverPanel.blocksRaycasts = true;
 
         gameOverPanel.DOFade(1, 0.5f);
+    }
+
+    public void DevelopPanelOpen()
+    {
+        if (isDevelopPanelChanging)
+        {
+            return;
+        }
+
+        isDevelopPanelChanging = true;
+
+        developPanel.interactable = true;
+        developPanel.blocksRaycasts = true;
+
+        developPanel.DOFade(1, 0.5f).OnComplete(() =>
+        {
+            isDevelopPanelChanging = false;
+        });
+    }
+
+    private void DevelopPanelClose()
+    {
+        if (isDevelopPanelChanging)
+        {
+            return;
+        }
+
+        isDevelopPanelChanging = true;
+
+        developPanel.DOFade(0, 0.5f).OnComplete(() =>
+        {
+            developPanel.interactable = false;
+            developPanel.blocksRaycasts = false;
+
+            isDevelopPanelChanging = false;
+        });
     }
 }
