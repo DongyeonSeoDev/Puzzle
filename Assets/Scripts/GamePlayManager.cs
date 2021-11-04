@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 using DG.Tweening;
 
 public enum eClearConditions
@@ -118,7 +119,7 @@ public class GamePlayManager : MonoBehaviour
             button.onClick.AddListener(() =>
             {
                 Debug.Log("¥›±‚");
-                //TODO: Scene ¿Ãµø
+                SceneManager.LoadScene("StageSelect");
             });
         }
 

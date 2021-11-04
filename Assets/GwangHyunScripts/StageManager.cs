@@ -11,7 +11,7 @@ public class StageManager : MonoBehaviour
     private int nowStage = 1;
     private int maxStage = 20;
 
-    private int stageIndex = 0;
+    private int stageIndex = -1;
 
     public Image curStage;
 
@@ -21,6 +21,7 @@ public class StageManager : MonoBehaviour
     public List<RectTransform> rect;
 
     public UIManager uIManager;
+    public GameManager gm;
     private StageLock stageLock;
 
 
@@ -39,23 +40,22 @@ public class StageManager : MonoBehaviour
     {
         curStage.rectTransform.anchoredPosition = new Vector3(rect[stageIndex].localPosition.x,
                                                 rect[stageIndex].localPosition.y + 200f, rect[stageIndex].localPosition.z);
+        StageClear();
     }
-
 
     public void StageClear()
     {
-        if (nowStage == maxStage) SceneManager.LoadScene("StageSelect");
-        else // 다음스테이지 UI 띄우기
-        nowStage++;
-        PlayerPrefs.SetInt("stageUnlock", nowStage);
+        if(gm.stageClear)
+        {
+            nowStage++;
+            PlayerPrefs.SetInt("stageUnlock", nowStage);
 
-        curStage.transform.DOMove(buttonTrs[0].transform.position, 2f);
-        stageIndex++;
+            curStage.transform.DOMove(buttonTrs[0].transform.position, 2f);
+            stageIndex++;
 
-        curStage.transform.parent = rect[stageIndex].transform.parent.transform;
-        MoveStageAnimation();
-
-        Debug.LogError(nowStage);
+            curStage.transform.parent = rect[stageIndex].transform.parent.transform;
+            MoveStageAnimation();
+        }
     }
 
     public void MoveStageAnimation()
@@ -70,9 +70,9 @@ public class StageManager : MonoBehaviour
     }
     public void SelectStage(int dataIndex)
     {
-        if (uIManager.remainChanceCnt > 0)
+        if (uIManager.heartCnt > 0)
         {
-            uIManager.EnterStage(dataIndex);
+            uIManager.StartStage();
             //데이터 불러오기
             //버튼 이벤트
         }

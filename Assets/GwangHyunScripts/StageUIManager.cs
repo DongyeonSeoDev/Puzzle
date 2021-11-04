@@ -7,15 +7,7 @@ public class StageUIManager : MonoBehaviour
 {
     [SerializeField] private GameObject gameOverPanel;
     [SerializeField] private GameObject nextStagePanel;
-    public void nextStageBtn()
-    {
-
-    }
-
-    public void reStartBtn()
-    {
-
-    }
+    
 
     public void GameOver()
     {
