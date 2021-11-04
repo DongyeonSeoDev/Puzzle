@@ -32,7 +32,7 @@ public struct StageStarPoint
 public class GamePlayManager : MonoBehaviour
 {
     [SerializeField] private int[] limitCounts = null;
-    [SerializeField] private int addScores = 30;
+    [SerializeField] private int addScores = 20;
 
     [SerializeField] private string[] explanations = null;
 
@@ -46,6 +46,7 @@ public class GamePlayManager : MonoBehaviour
 
     [SerializeField] private eClearConditions[] clearConditions;
     [SerializeField] private BreakingBlockClear[] breakingblockClears = null;
+    [SerializeField] private BreakingBlockClear[] breakingblockClears2 = null;
 
     [SerializeField] private CanvasGroup feverCanvasGroup = null;
     [SerializeField] private GameObject feverPanel = null;
@@ -56,6 +57,8 @@ public class GamePlayManager : MonoBehaviour
 
     [SerializeField] private Button[] closeButtons;
     [SerializeField] private Button developButton;
+
+    [SerializeField] private bool[] doubleCondition;
 
     public SetBarricade[] barricade;
 
@@ -130,19 +133,48 @@ public class GamePlayManager : MonoBehaviour
         switch (clearConditions[stageNumber])
         {
             case eClearConditions.BreakingBlocks:
-                clearConditionCheck += (block, count) =>
-                {
-                    if (block.blockType == breakingblockClears[stageNumber].blockType)
-                    {
-                        breakingblockClears[stageNumber].count -= count;
-                        SetExplanationText(breakingblockClears[stageNumber].count);
 
-                        if (breakingblockClears[stageNumber].count <= 0)
+                if (doubleCondition[stageNumber])
+                {
+                    clearConditionCheck += (block, count) =>
+                    {
+                        if (block.blockType == breakingblockClears[stageNumber].blockType)
+                        {
+                            breakingblockClears[stageNumber].count -= count;
+                            SetExplanationText(breakingblockClears[stageNumber].count, breakingblockClears2[stageNumber].count, true);
+                        }
+                        else if (block.blockType == breakingblockClears2[stageNumber].blockType)
+                        {
+                            breakingblockClears2[stageNumber].count -= count;
+                            SetExplanationText(breakingblockClears[stageNumber].count, breakingblockClears2[stageNumber].count, true);
+                        }
+
+                        if (breakingblockClears[stageNumber].count <= 0 && breakingblockClears2[stageNumber].count <= 0)
                         {
                             GameClear();
                         }
-                    }
-                };
+                    };
+
+                    SetExplanationText(breakingblockClears[stageNumber].count, breakingblockClears2[stageNumber].count, true);
+                }
+                else
+                {
+                    clearConditionCheck += (block, count) =>
+                    {
+                        if (block.blockType == breakingblockClears[stageNumber].blockType)
+                        {
+                            breakingblockClears[stageNumber].count -= count;
+                            SetExplanationText(breakingblockClears[stageNumber].count);
+
+                            if (breakingblockClears[stageNumber].count <= 0)
+                            {
+                                GameClear();
+                            }
+                        }
+                    };
+
+                    SetExplanationText(breakingblockClears[stageNumber].count);
+                }
                 break;
 
             default:
@@ -154,7 +186,6 @@ public class GamePlayManager : MonoBehaviour
         }
 
         SetLimitCountText();
-        SetExplanationText(breakingblockClears[stageNumber].count);
     }
 
     public void MoveBlock()
@@ -239,13 +270,23 @@ public class GamePlayManager : MonoBehaviour
         limitCountText.text = "제한횟수: " + Mathf.Clamp(limitCounts[stageNumber], 0, 100).ToString("00");
     }
 
-    private void SetExplanationText(int count)
+    private void SetExplanationText(int count, int count2 = 0, bool is2 = false)
     {
         SetScoreText();
 
-        string[] str = explanations[stageNumber].Split('n');
-        count = Mathf.Clamp(count, 0, 1000);
-        explanationText.text = str[0] + count + str[1];
+        if (!is2)
+        {
+            string[] str = explanations[stageNumber].Split('n');
+            count = Mathf.Clamp(count, 0, 1000);
+            explanationText.text = str[0] + count + str[1];
+        }
+        else
+        {
+            string[] str = explanations[stageNumber].Split('n');
+            count = Mathf.Clamp(count, 0, 1000);
+            count2 = Mathf.Clamp(count2, 0, 1000);
+            explanationText.text = str[0] + count + str[1] + count2 + str[2];
+        }
     }
 
     private void GameClear()
@@ -298,6 +339,9 @@ public class GamePlayManager : MonoBehaviour
         gameClearPanel.DOFade(1, 0.5f);
 
         SoundManager.SoundPlay(eSoundType.GAMECLEAR);
+
+        // TODO: ADD SCORE
+        Debug.Log(((float)score * 0.1f) + "의 코인을 얻었습니다.");
     }
 
     private void GameOverPanel()

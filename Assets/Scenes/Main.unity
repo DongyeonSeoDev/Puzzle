@@ -7726,19 +7726,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d2223db037a648c41b9bdbcfa534f62c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  limitCounts: 120000001400000016000000180000001a0000001c0000001e0000001e000000320000002d000000
+  limitCounts: 080000000b000000090000000e000000160000000c00000018000000130000000c00000012000000
   addScores: 20
   explanations:
-  - "\uBE68\uAC04\uC0C9 n\uAC1C \uC81C\uAC70"
-  - "\uD30C\uB780\uC0C9 n\uAC1C \uC81C\uAC70"
-  - "\uBCF4\uB77C\uC0C9 n\uAC1C \uC81C\uAC70"
-  - "\uC8FC\uD669\uC0C9 n\uAC1C \uC81C\uAC70"
   - "\uCD08\uB85D\uC0C9 n\uAC1C \uC81C\uAC70"
-  - "\uB098\uBB47\uC78E n\uAC1C \uC81C\uAC70"
-  - "\uD3ED\uD0C4 n\uAC1C \uC81C\uAC70"
-  - "\uC720\uB2C8\uCF58 n\uAC1C \uC81C\uAC70"
+  - "\uD30C\uB780\uC0C9 n\uAC1C \uC81C\uAC70"
   - "\uBE68\uAC04\uC0C9 n\uAC1C \uC81C\uAC70"
+  - "\uAC08\uC0C9 n\uAC1C \uC81C\uAC70"
   - "\uC8FC\uD669\uC0C9 n\uAC1C \uC81C\uAC70"
+  - "\uCD08\uB85D\uC0C9 n\uAC1C \uD30C\uB780\uC0C9 n\uAC1C \uC81C\uAC70"
+  - "\uBE68\uAC04\uC0C9 n\uAC1C \uAC08\uC0C9 n\uAC1C \uC81C\uAC70"
+  - "\uC8FC\uD669\uC0C9 n\uAC1C \uCD08\uB85D\uC0C9 n\uAC1C \uC81C\uAC70"
+  - "\uD30C\uB780\uC0C9 n\uAC1C \uAC08\uC0C9 n\uAC1C \uC81C\uAC70"
+  - "\uC8FC\uD669\uC0C9 n\uAC1C \uBE68\uAC04\uC0C9 n\uAC1C \uC81C\uAC70"
   starScore:
   - starPoint: c8000000f4010000e8030000
   - starPoint: 90010000e8030000d0070000
@@ -7754,39 +7754,53 @@ MonoBehaviour:
   - {fileID: 1589154806}
   - {fileID: 1108740407}
   - {fileID: 2089891331}
-  - {fileID: 2089891331}
-  - {fileID: 2089891331}
-  - {fileID: 2089891331}
-  - {fileID: 2089891331}
-  - {fileID: 2089891331}
-  - {fileID: 2089891331}
-  - {fileID: 2089891331}
   starOnImage: {fileID: 21300000, guid: a02fe128716b5a94585640da62c6a241, type: 3}
   scoreText: {fileID: 1642505205}
   limitCountText: {fileID: 1363990907}
   explanationText: {fileID: 401070936}
   clearConditions: 00000000000000000000000000000000000000000000000000000000000000000000000000000000
   breakingblockClears:
-  - blockType: 0
-    count: 25
-  - blockType: 1
-    count: 30
-  - blockType: 2
-    count: 35
-  - blockType: 3
-    count: 40
   - blockType: 4
+    count: 20
+  - blockType: 1
     count: 50
-  - blockType: 7
-    count: 10
-  - blockType: 6
-    count: 5
-  - blockType: 5
-    count: 2
   - blockType: 0
-    count: 200
+    count: 40
+  - blockType: 2
+    count: 50
   - blockType: 3
-    count: 200
+    count: 70
+  - blockType: 4
+    count: 20
+  - blockType: 0
+    count: 30
+  - blockType: 3
+    count: 19
+  - blockType: 1
+    count: 20
+  - blockType: 3
+    count: 35
+  breakingblockClears2:
+  - blockType: 0
+    count: 0
+  - blockType: 0
+    count: 0
+  - blockType: 0
+    count: 0
+  - blockType: 0
+    count: 0
+  - blockType: 0
+    count: 0
+  - blockType: 1
+    count: 20
+  - blockType: 2
+    count: 30
+  - blockType: 4
+    count: 25
+  - blockType: 2
+    count: 25
+  - blockType: 0
+    count: 20
   feverCanvasGroup: {fileID: 1087255672}
   feverPanel: {fileID: 1087255667}
   gameClearPanel: {fileID: 84828198}
@@ -7796,6 +7810,7 @@ MonoBehaviour:
   - {fileID: 684659156}
   - {fileID: 1673573762}
   developButton: {fileID: 1207717379}
+  doubleCondition: 00000000000101010101
   barricade:
   - position:
     - {x: 4, y: 4}
