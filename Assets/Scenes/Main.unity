@@ -7845,30 +7845,30 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d2223db037a648c41b9bdbcfa534f62c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  limitCounts: 080000000b000000090000000e000000160000000c00000018000000130000000c00000012000000
+  limitCounts: 14000000280000002d000000300000003200000019000000210000001e0000001c00000016000000
   addScores: 20
   explanations:
   - "\uCD08\uB85D\uC0C9 n\uAC1C \uC81C\uAC70"
-  - "\uD30C\uB780\uC0C9 n\uAC1C \uC81C\uAC70"
   - "\uBE68\uAC04\uC0C9 n\uAC1C \uC81C\uAC70"
-  - "\uAC08\uC0C9 n\uAC1C \uC81C\uAC70"
   - "\uC8FC\uD669\uC0C9 n\uAC1C \uC81C\uAC70"
+  - "\uAC08\uC0C9 n\uAC1C \uC81C\uAC70"
+  - "\uD30C\uB780\uC0C9 n\uAC1C \uC81C\uAC70"
   - "\uCD08\uB85D\uC0C9 n\uAC1C   \uD30C\uB780\uC0C9 n\uAC1C \uC81C\uAC70"
   - "\uBE68\uAC04\uC0C9 n\uAC1C   \uAC08\uC0C9 n\uAC1C \uC81C\uAC70"
   - "\uC8FC\uD669\uC0C9 n\uAC1C   \uCD08\uB85D\uC0C9 n\uAC1C \uC81C\uAC70"
   - "\uD30C\uB780\uC0C9 n\uAC1C   \uAC08\uC0C9 n\uAC1C \uC81C\uAC70"
   - "\uC8FC\uD669\uC0C9 n\uAC1C   \uBE68\uAC04\uC0C9 n\uAC1C \uC81C\uAC70"
   starScore:
-  - starPoint: c8000000f4010000e8030000
-  - starPoint: 90010000e8030000d0070000
-  - starPoint: f4010000b004000098080000
-  - starPoint: e8030000dc050000c4090000
-  - starPoint: b0040000a40600008c0a0000
-  - starPoint: dc050000d0070000b80b0000
-  - starPoint: a40600008c0a0000740e0000
-  - starPoint: d0070000b80b0000a00f0000
-  - starPoint: 98080000800c000068100000
-  - starPoint: b80b0000a00f000088130000
+  - starPoint: 840300004c040000b0040000
+  - starPoint: d0070000b80b0000800c0000
+  - starPoint: 9808000060090000280a0000
+  - starPoint: c4090000f00a00001c0c0000
+  - starPoint: c4090000f00a0000b80b0000
+  - starPoint: 9808000060090000280a0000
+  - starPoint: 280a0000540b0000b80b0000
+  - starPoint: 8c0a0000540b0000b80b0000
+  - starPoint: 98080000fc080000c4090000
+  - starPoint: 60090000c4090000b80b0000
   starImage:
   - {fileID: 1992772404}
   - {fileID: 1025496124}
@@ -7973,7 +7973,7 @@ MonoBehaviour:
   - {x: 5, y: 5}
   - {x: 5, y: 5}
   - {x: 5, y: 5}
-  stageNumber: 7
+  stageNumber: 0
   gameEnd: 0
 --- !u!4 &1427594582
 Transform:

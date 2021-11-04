@@ -117,6 +117,8 @@ public class GamePlayManager : MonoBehaviour
 
         Instance = this;
 
+        stageNumber = GameManager.Instance.stageIndex;
+
         foreach (var button in closeButtons)
         {
             button.onClick.AddListener(() =>
