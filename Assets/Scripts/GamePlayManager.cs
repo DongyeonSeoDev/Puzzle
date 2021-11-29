@@ -117,13 +117,10 @@ public class GamePlayManager : MonoBehaviour
 
         Instance = this;
 
-        stageNumber = GameManager.Instance.stageIndex;
-
         foreach (var button in closeButtons)
         {
             button.onClick.AddListener(() =>
             {
-                Debug.Log("닫기");
                 SceneManager.LoadScene("StageSelect");
             });
         }
@@ -136,6 +133,18 @@ public class GamePlayManager : MonoBehaviour
 
     private void Start()
     {
+        if (GameManager.Instance == null)
+        {
+            Debug.LogWarning("Main Scene에서 시작하면 GameManager가 없으므로 오류가 발생합니다.");
+            Debug.LogWarning("StageSelect Scene에서 시작해 주세요.");
+
+            SceneManager.LoadScene("StageSelect");
+
+            return;
+        }
+        
+        stageNumber = GameManager.Instance.stageIndex;
+
         switch (clearConditions[stageNumber])
         {
             case eClearConditions.BreakingBlocks:
@@ -307,8 +316,6 @@ public class GamePlayManager : MonoBehaviour
             return;
         }
 
-        Debug.Log("게임 클리어");
-
         gameEnd = true;
 
         FeverTime();
@@ -323,8 +330,6 @@ public class GamePlayManager : MonoBehaviour
 
         gameEnd = true;
 
-        Debug.Log("게임 오버");
-
         GameOverPanel();
         SoundManager.SoundPlay(eSoundType.GAMEOVER);
     }
@@ -335,11 +340,14 @@ public class GamePlayManager : MonoBehaviour
 
         sequence.Append(feverCanvasGroup.DOFade(1f, 0.5f));
         sequence.Join(feverCanvasGroup.transform.DOMoveY(1f, 0.5f).SetRelative());
+
         sequence.Append(feverCanvasGroup.DOFade(0f, 0.5f).SetDelay(0.5f));
-        sequence.Join(feverCanvasGroup.transform.DOMoveY(-1f, 0.5f).SetRelative().OnComplete(() =>
+        sequence.Join(feverCanvasGroup.transform.DOMoveY(-1f, 0.5f).SetRelative());
+
+        sequence.AppendCallback(() =>
         {
             gameClearEvent();
-        }));
+        });
     }
 
     public void GameClearPanel()

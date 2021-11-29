@@ -20,7 +20,7 @@ public class GameManager : MonoBehaviour
         {
             if (instance == null)
             {
-                Debug.Log("instance°¡ nullÀÔ´Ï´Ù.");
+                Debug.Log("instance가 없습니다.");
 
                 return null;
             }
@@ -38,7 +38,7 @@ public class GameManager : MonoBehaviour
     {
         if (instance != null)
         {
-            Debug.Log("Áßº¹µÈ instance ÀÔ´Ï´Ù.");
+            Debug.Log("instance가 중복입니다.");
             Destroy(this);
             return;
         }
